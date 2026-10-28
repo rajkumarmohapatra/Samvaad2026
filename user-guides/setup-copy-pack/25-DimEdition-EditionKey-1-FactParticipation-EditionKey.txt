@@ -1,0 +1,3 @@
+DimEdition[EditionKey]  1 -> *  FactParticipation[EditionKey]
+DimStream[StreamKey]    1 -> *  FactParticipation[StreamKey]
+DimParticipant[ParticipantKey]  1 -> *  FactParticipation[ParticipantKey]

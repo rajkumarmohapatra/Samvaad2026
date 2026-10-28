@@ -1,0 +1,74 @@
+{
+  "status": "manual-desktop-build-required",
+  "fact_grain": "one participant per event edition",
+  "tables": {
+    "FactParticipation": {
+      "key": "ParticipationKey",
+      "integers": [
+        "Arrived",
+        "Registered",
+        "Departed",
+        "IsFirstYear"
+      ]
+    },
+    "DimEdition": {
+      "key": "EditionKey",
+      "integers": [
+        "Year"
+      ],
+      "dates": [
+        "Starts",
+        "Ends"
+      ]
+    },
+    "DimStream": {
+      "key": "StreamKey"
+    },
+    "DimParticipant": {
+      "key": "ParticipantKey"
+    }
+  },
+  "relationships": [
+    {
+      "from": "DimEdition.EditionKey",
+      "to": "FactParticipation.EditionKey",
+      "cardinality": "one-to-many",
+      "direction": "single"
+    },
+    {
+      "from": "DimStream.StreamKey",
+      "to": "FactParticipation.StreamKey",
+      "cardinality": "one-to-many",
+      "direction": "single"
+    },
+    {
+      "from": "DimParticipant.ParticipantKey",
+      "to": "FactParticipation.ParticipantKey",
+      "cardinality": "one-to-many",
+      "direction": "single"
+    }
+  ],
+  "filters": [
+    "Required selected edition",
+    "Authorized stream scope via tested RLS",
+    "State/district/category slicers within authorized model"
+  ],
+  "excluded": [
+    "Identity documents",
+    "Bank details",
+    "Names",
+    "Phone",
+    "Email",
+    "Health",
+    "Community until approved aggregate projection"
+  ],
+  "missing_facts": [
+    "Accommodation occupancy and dated capacity",
+    "Meals and entitlements",
+    "Trip utilization",
+    "Session attendance",
+    "Financial approvals/payments",
+    "Incidents and operational SLA",
+    "Expected arrival/departure forecasts"
+  ]
+}

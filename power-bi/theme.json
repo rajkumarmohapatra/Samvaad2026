@@ -1,0 +1,14 @@
+{
+  "name": "Sambad 360",
+  "dataColors": [
+    "#194F40",
+    "#A35D26",
+    "#E7B56C",
+    "#6B8791",
+    "#7E6B98",
+    "#577B46"
+  ],
+  "background": "#F3F5F0",
+  "foreground": "#253E36",
+  "tableAccent": "#194F40"
+}

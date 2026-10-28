@@ -1,0 +1,2 @@
+Refresh(SB_Nominations_PILOT);
+Navigate(scrParticipants, ScreenTransition.None)

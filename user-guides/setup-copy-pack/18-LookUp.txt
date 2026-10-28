@@ -1,0 +1,4 @@
+LookUp(
+    SB_Nominations_PILOT,
+    RecordKey = Trim(txtExactId.Text)
+)

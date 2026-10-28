@@ -1,0 +1,32 @@
+role,resource,view,create,edit,approve,export,delete,scope
+Super Administrator,Configuration,true,true,true,true,false,false,authorized edition
+Super Administrator,SecurityAdmin,true,true,true,true,false,false,authorized edition
+Event Director / Leadership,Dashboard,true,false,false,false,false,false,authorized edition
+Stream Owner,OwnStreamNominations,true,true,true,false,false,false,assigned stream and edition
+Stream Owner,OwnStreamProjection,true,false,false,false,false,false,assigned stream and edition
+Registration Team,Registration,true,true,true,true,false,false,authorized edition
+Registration Team,OperationalProjection,true,false,false,false,false,false,authorized edition
+Registration Team,IdentityStatus,true,false,false,false,false,false,authorized edition
+Accommodation Team,Accommodation,true,true,true,true,false,false,authorized edition
+Accommodation Team,ArrivalCommands,true,true,false,false,false,false,authorized edition
+Accommodation Team,OperationalProjection,true,false,false,false,false,false,authorized edition
+Transport / Mobility Team,Transport,true,true,true,false,false,false,authorized edition
+Transport / Mobility Team,OperationalProjection,true,false,false,false,false,false,authorized edition
+Food Team,Food,true,true,true,false,false,false,authorized edition
+Food Team,OperationalProjection,true,false,false,false,false,false,authorized edition
+Gifts & Kits Team,Kits,true,true,true,false,false,false,authorized edition
+Gifts & Kits Team,OperationalProjection,true,false,false,false,false,false,authorized edition
+Finance & Accounts Team,Finance,true,true,true,false,false,false,authorized edition
+Finance & Accounts Team,FinanceVault,true,true,true,false,false,false,authorized edition
+Finance Checker,FinanceChecker,true,true,false,true,false,false,authorized edition
+Finance Checker,Finance,true,false,false,false,false,false,authorized edition
+Finance Payer,FinancePayer,true,true,false,false,false,false,authorized edition
+Finance Payer,Finance,true,false,false,false,false,false,authorized edition
+Venue / Theme Team,Sessions,true,true,true,false,false,false,authorized edition
+Venue / Theme Team,AssignedProjection,true,false,false,false,false,false,authorized edition
+Safety / Public Health Team,Safety,true,true,true,false,false,false,authorized edition
+Safety / Public Health Team,OperationalProjection,true,false,false,false,false,false,authorized edition
+Helpdesk / Volunteers,Helpdesk,true,true,true,false,false,false,authorized edition
+Helpdesk / Volunteers,HelpdeskProjection,true,false,false,false,false,false,authorized edition
+Digital & Analytics Team,AnalyticsProjection,true,false,false,false,false,false,authorized edition
+Participant,SelfProjection,true,false,false,false,false,false,own verified identity

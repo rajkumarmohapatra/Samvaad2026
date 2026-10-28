@@ -1,0 +1,18 @@
+// Add each measure separately in Power BI Desktop. Assign numeric types first.
+Participants = DISTINCTCOUNT(FactParticipation[ParticipantKey])
+Participations = COUNTROWS(FactParticipation)
+Approved = CALCULATE([Participations], FactParticipation[ReviewStatus] = "Approved")
+Registered = CALCULATE([Participations], FactParticipation[Registered] = 1)
+Registration Completion = DIVIDE([Registered], [Approved])
+Arrivals Confirmed = CALCULATE([Participations], FactParticipation[Arrived] = 1)
+Departures Confirmed = CALCULATE([Participations], FactParticipation[Departed] = 1)
+First-time Participations = CALCULATE([Participations], FactParticipation[IsFirstYear] = 1)
+Repeat Participations = CALCULATE([Participations], FactParticipation[IsFirstYear] = 0)
+Prior Year Participations =
+VAR SelectedYear = SELECTEDVALUE(DimEdition[Year])
+RETURN IF(NOT ISBLANK(SelectedYear), CALCULATE([Participations], REMOVEFILTERS(DimEdition), DimEdition[Year] = SelectedYear - 1))
+YoY Growth = DIVIDE([Participations] - [Prior Year Participations], [Prior Year Participations])
+// Denominator is approved nominations, not all drafts. Blank denominators stay blank.
+// Repeat means seen in an earlier recorded edition; incomplete history can misclassify.
+// Operational occupancy, meal, transport, attendance and payment measures require facts
+// that are not exported by this initial model. Do not publish placeholder totals.

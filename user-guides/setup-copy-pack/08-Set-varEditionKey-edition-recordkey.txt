@@ -1,0 +1,5 @@
+Set(varEditionKey, "<edition-recordkey>");
+Set(varStreamKey, "<stream-recordkey>");
+Set(varSaving, false);
+Set(varDraftKey, Blank());
+Set(varSelectedNomination, Blank())

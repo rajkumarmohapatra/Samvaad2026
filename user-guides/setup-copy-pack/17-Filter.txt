@@ -1,0 +1,5 @@
+Filter(
+    SB_Nominations_PILOT,
+    EditionId = varEditionKey &&
+    Phone = Trim(txtPhoneSearch.Text)
+)

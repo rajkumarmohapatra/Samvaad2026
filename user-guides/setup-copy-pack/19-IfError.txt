@@ -1,0 +1,9 @@
+IfError(
+    Patch(
+        SB_Nominations_PILOT,
+        ThisItem,
+        { SubmitRequested: true, UpdatedAt: Now() }
+    ),
+    Notify("Submission failed. Refresh and try again.", NotificationType.Error),
+    Notify("Review requested; approval is pending.", NotificationType.Success)
+)

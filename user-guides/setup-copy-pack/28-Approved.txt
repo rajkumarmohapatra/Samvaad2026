@@ -1,0 +1,5 @@
+Approved =
+CALCULATE(
+    [Participations],
+    FactParticipation[ReviewStatus] = "Approved"
+)

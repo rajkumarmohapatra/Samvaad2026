@@ -1,0 +1,12 @@
+__pycache__/
+*.db
+*.db-shm
+*.db-wal
+.env
+test-data/generated/
+tests/results/
+node_modules/
+.venv/
+portal/*.sqlite3
+portal/staticfiles/
+portal/media/

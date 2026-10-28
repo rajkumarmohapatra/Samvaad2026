@@ -1,0 +1,5 @@
+Registered =
+CALCULATE(
+    [Participations],
+    FactParticipation[Registered] = 1
+)

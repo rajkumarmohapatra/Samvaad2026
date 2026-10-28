@@ -1,0 +1,242 @@
+[
+  {
+    "code": "UNIT-01",
+    "name": "Accommodation",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-02",
+    "name": "Akhra",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-03",
+    "name": "All Venue Team (Gopal Maidan, TCC etc)",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-04",
+    "name": "Anchoring - (Cultural) Gopal Maidan",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-05",
+    "name": "Colors of Jharkhhand",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-06",
+    "name": "Communications",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-07",
+    "name": "Crew",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-08",
+    "name": "Cultural",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-09",
+    "name": "Cultural Celebrations",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-10",
+    "name": "Delegate",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-11",
+    "name": "Delegates Team",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-12",
+    "name": "Digital & Analytics",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-13",
+    "name": "Documentation Team",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-14",
+    "name": "Finance & Accounts",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-15",
+    "name": "Food Team",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-16",
+    "name": "Gifts & Kits",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-17",
+    "name": "Gopal Maidan - Food Stalls",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-18",
+    "name": "Listening Post",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-19",
+    "name": "Mobility",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-20",
+    "name": "Nagara Team",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-21",
+    "name": "NOTE TAKING",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-22",
+    "name": "Others",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-23",
+    "name": "Public Health",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-24",
+    "name": "Registration & Helpdesk",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-25",
+    "name": "Rhythms of the Earth",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-26",
+    "name": "Safety",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-27",
+    "name": "Samuday Ke Saath",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-28",
+    "name": "Samvaad Fellowship",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-29",
+    "name": "Security - Tata Steel",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-30",
+    "name": "Stakeholders Community",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-31",
+    "name": "Stakeholders Management",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-32",
+    "name": "Supply Chain",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-33",
+    "name": "Team Samvaad",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-34",
+    "name": "Ticketing & Booking Team",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-35",
+    "name": "Transport",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-36",
+    "name": "Tribal Artisans",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-37",
+    "name": "Tribal Cuisine",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-38",
+    "name": "Tribal Healers",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-39",
+    "name": "Tribal Sports",
+    "kind": "Unclassified",
+    "active": true
+  },
+  {
+    "code": "UNIT-40",
+    "name": "TSL Volunteers",
+    "kind": "Unclassified",
+    "active": true
+  }
+]

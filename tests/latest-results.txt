@@ -1,0 +1,45 @@
+LOCAL DOMAIN AND ARTIFACT TESTS ONLY
+test_core_does_not_provision_bank_or_identity (test_artifacts.ArtifactTests.test_core_does_not_provision_bank_or_identity) ... ok
+test_exact_seed_names_and_no_inferred_classification (test_artifacts.ArtifactTests.test_exact_seed_names_and_no_inferred_classification) ... ok
+test_json_and_schema_keys (test_artifacts.ArtifactTests.test_json_and_schema_keys) ... ok
+test_synthetic_export_grain_and_privacy (test_artifacts.ArtifactTests.test_synthetic_export_grain_and_privacy) ... ok
+test_accessibility (test_core.DomainTests.test_accessibility) ... ok
+test_approval_requires_submission (test_core.DomainTests.test_approval_requires_submission) ... ok
+test_checkout_required_before_departure (test_core.DomainTests.test_checkout_required_before_departure) ... ok
+test_closed_edition_cannot_change (test_core.DomainTests.test_closed_edition_cannot_change) ... ok
+test_community_not_required (test_core.DomainTests.test_community_not_required) ... ok
+test_concurrent_last_bed (test_core.DomainTests.test_concurrent_last_bed) ... ok
+test_cross_stream_read_denied (test_core.DomainTests.test_cross_stream_read_denied) ... ok
+test_cross_stream_write_denied (test_core.DomainTests.test_cross_stream_write_denied) ... ok
+test_departed_participant_cannot_register (test_core.DomainTests.test_departed_participant_cannot_register) ... ok
+test_duplicate_bed (test_core.DomainTests.test_duplicate_bed) ... ok
+test_failed_operation_rolls_back_audit_and_master (test_core.DomainTests.test_failed_operation_rolls_back_audit_and_master) ... ok
+test_finance_separation (test_core.DomainTests.test_finance_separation) ... ok
+test_historical_reuse (test_core.DomainTests.test_historical_reuse) ... ok
+test_import_preview_and_row_errors (test_core.DomainTests.test_import_preview_and_row_errors) ... ok
+test_kit_uniqueness_and_stock (test_core.DomainTests.test_kit_uniqueness_and_stock) ... ok
+test_likely_duplicate_requires_review (test_core.DomainTests.test_likely_duplicate_requires_review) ... ok
+test_meal_uniqueness (test_core.DomainTests.test_meal_uniqueness) ... ok
+test_money_is_integer_paise (test_core.DomainTests.test_money_is_integer_paise) ... ok
+test_nomination_retry_is_idempotent (test_core.DomainTests.test_nomination_retry_is_idempotent) ... ok
+test_owner_cannot_approve (test_core.DomainTests.test_owner_cannot_approve) ... ok
+test_redacted_read (test_core.DomainTests.test_redacted_read) ... ok
+test_registration_does_not_require_accommodation (test_core.DomainTests.test_registration_does_not_require_accommodation) ... ok
+test_retry_key_cannot_change_payload (test_core.DomainTests.test_retry_key_cannot_change_payload) ... ok
+test_search_sql_injection_is_literal (test_core.DomainTests.test_search_sql_injection_is_literal) ... ok
+test_shared_phone_not_forced_merge (test_core.DomainTests.test_shared_phone_not_forced_merge) ... ok
+test_stale_version_rejected (test_core.DomainTests.test_stale_version_rejected) ... ok
+test_transition_retry (test_core.DomainTests.test_transition_retry) ... ok
+test_trip_capacity (test_core.DomainTests.test_trip_capacity) ... ok
+test_unit_merge_preserves_history (test_core.DomainTests.test_unit_merge_preserves_history) ... ok
+test_unknown_actions_fail_closed (test_core.DomainTests.test_unknown_actions_fail_closed) ... ok
+test_unknown_role_cannot_read (test_core.DomainTests.test_unknown_role_cannot_read) ... ok
+test_full_dataset_and_pagination (test_core.ScaleTests.test_full_dataset_and_pagination) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 1.240s
+
+OK
+
+Duration: 1.350s
+Not run: browser rendering, PowerShell execution, Power Fx compilation, native flows, Entra/SharePoint ACL tests, Power BI Desktop/RLS.

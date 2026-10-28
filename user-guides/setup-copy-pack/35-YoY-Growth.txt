@@ -1,0 +1,5 @@
+YoY Growth =
+DIVIDE(
+    [Participations] - [Prior Year Participations],
+    [Prior Year Participations]
+)

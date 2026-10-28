@@ -1,0 +1,3 @@
+scrHome
+scrParticipants
+scrNomination
