@@ -1,0 +1,5 @@
+Arrivals Confirmed =
+CALCULATE(
+    [Participations],
+    FactParticipation[Arrived] = 1
+)

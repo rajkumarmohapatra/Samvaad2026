@@ -1,0 +1,11 @@
+Prior Year Participations =
+VAR SelectedYear = SELECTEDVALUE(DimEdition[Year])
+RETURN
+IF(
+    NOT ISBLANK(SelectedYear),
+    CALCULATE(
+        [Participations],
+        REMOVEFILTERS(DimEdition),
+        DimEdition[Year] = SelectedYear - 1
+    )
+)

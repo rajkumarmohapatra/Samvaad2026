@@ -1,0 +1,212 @@
+[
+  {
+    "item": 1,
+    "file": "01-guid-NewGuid-ToString.txt",
+    "language": "powershell",
+    "first_line": "[guid]::NewGuid().ToString()"
+  },
+  {
+    "item": 2,
+    "file": "02-SB-Config-Readers.txt",
+    "language": "text",
+    "first_line": "SB Config Readers"
+  },
+  {
+    "item": 3,
+    "file": "03-.txt",
+    "language": "json",
+    "first_line": "["
+  },
+  {
+    "item": 4,
+    "file": "04-sharepoint-Provision-Core-ps1.txt",
+    "language": "powershell",
+    "first_line": ".\\sharepoint\\Provision-Core.ps1 `"
+  },
+  {
+    "item": 5,
+    "file": "05-SB-Nominations-PILOT.txt",
+    "language": "text",
+    "first_line": "SB_Nominations_PILOT"
+  },
+  {
+    "item": 6,
+    "file": "06-scrHome.txt",
+    "language": "text",
+    "first_line": "scrHome"
+  },
+  {
+    "item": 7,
+    "file": "07-scrHome.txt",
+    "language": "powerfx",
+    "first_line": "scrHome"
+  },
+  {
+    "item": 8,
+    "file": "08-Set-varEditionKey-edition-recordkey.txt",
+    "language": "powerfx",
+    "first_line": "Set(varEditionKey, \"<edition-recordkey>\");"
+  },
+  {
+    "item": 9,
+    "file": "09-Refresh-SB-Nominations-PILOT.txt",
+    "language": "powerfx",
+    "first_line": "Refresh(SB_Nominations_PILOT);"
+  },
+  {
+    "item": 10,
+    "file": "10-SortByColumns.txt",
+    "language": "powerfx",
+    "first_line": "SortByColumns("
+  },
+  {
+    "item": 11,
+    "file": "11-Set-varSelectedNomination-ThisItem.txt",
+    "language": "powerfx",
+    "first_line": "Set(varSelectedNomination, ThisItem);"
+  },
+  {
+    "item": 12,
+    "file": "12-Set-varSelectedNomination-Blank.txt",
+    "language": "powerfx",
+    "first_line": "Set(varSelectedNomination, Blank());"
+  },
+  {
+    "item": 13,
+    "file": "13-Delegate-Artist-Artisan-Volunteer-Other.txt",
+    "language": "powerfx",
+    "first_line": "[\"Delegate\", \"Artist\", \"Artisan\", \"Volunteer\", \"Other\"]"
+  },
+  {
+    "item": 14,
+    "file": "14-If-varSaving-DisplayMode-Disabled-DisplayMode-Edit.txt",
+    "language": "powerfx",
+    "first_line": "If(varSaving, DisplayMode.Disabled, DisplayMode.Edit)"
+  },
+  {
+    "item": 15,
+    "file": "15-If.txt",
+    "language": "powerfx",
+    "first_line": "If("
+  },
+  {
+    "item": 16,
+    "file": "16-Navigate-scrParticipants-ScreenTransition-None.txt",
+    "language": "powerfx",
+    "first_line": "Navigate(scrParticipants, ScreenTransition.None)"
+  },
+  {
+    "item": 17,
+    "file": "17-Filter.txt",
+    "language": "powerfx",
+    "first_line": "Filter("
+  },
+  {
+    "item": 18,
+    "file": "18-LookUp.txt",
+    "language": "powerfx",
+    "first_line": "LookUp("
+  },
+  {
+    "item": 19,
+    "file": "19-IfError.txt",
+    "language": "powerfx",
+    "first_line": "IfError("
+  },
+  {
+    "item": 20,
+    "file": "20-equals-triggerBody-SubmitRequested-true.txt",
+    "language": "text",
+    "first_line": "@equals(triggerBody()?['SubmitRequested'], true)"
+  },
+  {
+    "item": 21,
+    "file": "21-utcNow.txt",
+    "language": "text",
+    "first_line": "utcNow()"
+  },
+  {
+    "item": 22,
+    "file": "22-guid.txt",
+    "language": "text",
+    "first_line": "guid()"
+  },
+  {
+    "item": 23,
+    "file": "23-workflow-run-name.txt",
+    "language": "text",
+    "first_line": "workflow()?['run']?['name']"
+  },
+  {
+    "item": 24,
+    "file": "24-Coalesce.txt",
+    "language": "powerfx",
+    "first_line": "Coalesce("
+  },
+  {
+    "item": 25,
+    "file": "25-DimEdition-EditionKey-1-FactParticipation-EditionKey.txt",
+    "language": "text",
+    "first_line": "DimEdition[EditionKey]  1 -> *  FactParticipation[EditionKey]"
+  },
+  {
+    "item": 26,
+    "file": "26-Participations-COUNTROWS-FactParticipation.txt",
+    "language": "dax",
+    "first_line": "Participations = COUNTROWS(FactParticipation)"
+  },
+  {
+    "item": 27,
+    "file": "27-Participants-DISTINCTCOUNT-FactParticipation-ParticipantKey.txt",
+    "language": "dax",
+    "first_line": "Participants = DISTINCTCOUNT(FactParticipation[ParticipantKey])"
+  },
+  {
+    "item": 28,
+    "file": "28-Approved.txt",
+    "language": "dax",
+    "first_line": "Approved ="
+  },
+  {
+    "item": 29,
+    "file": "29-Registered.txt",
+    "language": "dax",
+    "first_line": "Registered ="
+  },
+  {
+    "item": 30,
+    "file": "30-Registration-Completion-DIVIDE-Registered-Approved.txt",
+    "language": "dax",
+    "first_line": "Registration Completion = DIVIDE([Registered], [Approved])"
+  },
+  {
+    "item": 31,
+    "file": "31-Arrivals-Confirmed.txt",
+    "language": "dax",
+    "first_line": "Arrivals Confirmed ="
+  },
+  {
+    "item": 32,
+    "file": "32-Repeat-Participations.txt",
+    "language": "dax",
+    "first_line": "Repeat Participations ="
+  },
+  {
+    "item": 33,
+    "file": "33-First-time-Participations.txt",
+    "language": "dax",
+    "first_line": "First-time Participations ="
+  },
+  {
+    "item": 34,
+    "file": "34-Prior-Year-Participations.txt",
+    "language": "dax",
+    "first_line": "Prior Year Participations ="
+  },
+  {
+    "item": 35,
+    "file": "35-YoY-Growth.txt",
+    "language": "dax",
+    "first_line": "YoY Growth ="
+  }
+]

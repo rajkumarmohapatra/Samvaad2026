@@ -1,0 +1,9 @@
+SortByColumns(
+    Filter(
+        SB_Nominations_PILOT,
+        EditionId = varEditionKey &&
+        StartsWith(FullName, txtSearch.Text)
+    ),
+    "FullName",
+    SortOrder.Ascending
+)

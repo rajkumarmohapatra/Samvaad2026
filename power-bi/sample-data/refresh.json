@@ -1,0 +1,8 @@
+{
+  "synthetic": true,
+  "classification": "pseudonymous synthetic; not an anonymization guarantee",
+  "exported_at": "2026-10-28T02:37:21.851125+00:00",
+  "fact_grain": "one participant per edition",
+  "participations": 3600,
+  "participants": 3000
+}

@@ -1,0 +1,9 @@
+Set(varSelectedNomination, ThisItem);
+Set(varDraftKey, ThisItem.RecordKey);
+Reset(txtFullName);
+Reset(txtPhone);
+Reset(txtState);
+Reset(txtDistrict);
+Reset(txtCommunity);
+Reset(ddCategory);
+Navigate(scrNomination, ScreenTransition.None)

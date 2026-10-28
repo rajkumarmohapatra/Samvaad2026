@@ -1,0 +1,63 @@
+If(
+    IsBlank(Trim(txtFullName.Text)) ||
+    IsBlank(Trim(txtState.Text)) ||
+    !IsMatch(
+        Trim(txtPhone.Text),
+        "[0-9]{10,15}",
+        MatchOptions.Complete
+    ),
+    Notify(
+        "Enter a name, state and a phone with 10 to 15 digits.",
+        NotificationType.Warning
+    ),
+    Set(varSaving, true);
+    If(IsBlank(varDraftKey), Set(varDraftKey, Text(GUID())));
+    IfError(
+        Set(
+            varSavedNomination,
+            Patch(
+                SB_Nominations_PILOT,
+                If(
+                    IsBlank(varSelectedNomination.ID),
+                    Defaults(SB_Nominations_PILOT),
+                    varSelectedNomination
+                ),
+                {
+                    RecordKey: varDraftKey,
+                    ClientRequestKey: If(
+                        IsBlank(varSelectedNomination.ID),
+                        varDraftKey,
+                        varSelectedNomination.ClientRequestKey
+                    ),
+                    EditionId: varEditionKey,
+                    StreamId: varStreamKey,
+                    FullName: Trim(txtFullName.Text),
+                    Phone: Trim(txtPhone.Text),
+                    State: Trim(txtState.Text),
+                    District: Trim(txtDistrict.Text),
+                    Community: Trim(txtCommunity.Text),
+                    Category: ddCategory.Selected.Value,
+                    CreatedAt: If(
+                        IsBlank(varSelectedNomination.ID),
+                        Now(),
+                        varSelectedNomination.CreatedAt
+                    ),
+                    UpdatedAt: Now(),
+                    SubmitRequested: Coalesce(
+                        varSelectedNomination.SubmitRequested,
+                        false
+                    )
+                }
+            )
+        );
+        Set(varSaving, false);
+        Notify("Draft saved.", NotificationType.Success);
+        Refresh(SB_Nominations_PILOT);
+        Navigate(scrParticipants, ScreenTransition.None),
+        Set(varSaving, false);
+        Notify(
+            "Save could not be confirmed. Refresh and search before retrying.",
+            NotificationType.Error
+        )
+    )
+)

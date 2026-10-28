@@ -1,0 +1,3458 @@
+[
+  {
+    "name": "Events",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EventCode",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Active",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "EventEditions",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionCode",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "EventId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Year",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Starts",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Ends",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ClosedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "OrganizationalUnits",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UnitCode",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Kind",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Active",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "MergedInto",
+        "type": "guid",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "EditionUnits",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "UnitId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "DisplayNameSnapshot",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "OwnerGroupId",
+        "type": "integer",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Active",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Streams",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UnitId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Description",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Teams",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UnitId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Responsibility",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "TeamResponsibilities",
+    "boundary": "Configuration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "TeamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "UnitId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Responsibility",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Keep event configuration and immutable yearly labels; annual review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Venues",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Address",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Accessible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "ActivityLocations",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "VenueId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Sessions",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "LocationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "StreamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Title",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Starts",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Ends",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CoordinatorId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "SessionAssignments",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "SessionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "AttendanceStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AttendedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Participants",
+    "boundary": "RestrictedProfile",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "FullName",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "PreferredName",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Phone",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AlternatePhone",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Email",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "State",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "District",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Village",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Community",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Languages",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Gender",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "BirthDate",
+        "type": "date",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "IdentityType",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "IdentityStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; retain reusable profile only under documented purpose and notice.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "EventParticipations",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipantId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "PrimaryStreamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Category",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "NominatingTeamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "OwnerId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Starts",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Ends",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReviewStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "TravelEligible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AccommodationEligible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "FoodEligible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "KitEligible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "FinanceEligible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ArrivalStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RegistrationStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "DepartureStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "OpaqueBadgeToken",
+        "type": "guid",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "ParticipationSnapshots",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "NominationRecordKey",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "DisplayName",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "StreamNameSnapshot",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CategorySnapshot",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReviewStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "SourceVersion",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "ParticipantStreamAssignments",
+    "boundary": "Operations",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "StreamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "IsPrimary",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Nominations",
+    "boundary": "StreamPartition",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "StreamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "FullName",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Phone",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "State",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "District",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Community",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Category",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ClientRequestKey",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "SubmitRequested",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "ReviewQueue",
+    "boundary": "Reviewer",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "NominationKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "StreamId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "SourceVersion",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Snapshot",
+        "type": "memo",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ReviewerId",
+        "type": "text",
+        "required": false,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ReviewedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RejectionReason",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "TravelBookings",
+    "boundary": "Transport",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Mode",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Origin",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ArrivalAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "DepartureAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ServiceNumber",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "PickupPoint",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "BookingReference",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Vehicles",
+    "boundary": "Transport",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Registration",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "DriverName",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "DriverPhone",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CoordinatorId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Trips",
+    "boundary": "Transport",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "VehicleId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Origin",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Destination",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Starts",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Ends",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "TripPassengers",
+    "boundary": "Transport",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "TripId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "AccommodationProperties",
+    "boundary": "Accommodation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Address",
+        "type": "memo",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Contact",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Buildings",
+    "boundary": "Accommodation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "PropertyId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Rooms",
+    "boundary": "Accommodation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "BuildingId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Restriction",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Accessible",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "Beds",
+    "boundary": "Accommodation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "RoomId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Label",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Active",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "AccommodationAllocations",
+    "boundary": "Accommodation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "BedId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Starts",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Ends",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "CheckedInAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CheckedOutAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AllocationKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "MealLocations",
+    "boundary": "Food",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "FoodStalls",
+    "boundary": "Food",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "LocationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Name",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Cuisine",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "MealWindows",
+    "boundary": "Food",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "LocationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Starts",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Ends",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Capacity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "MealEntitlements",
+    "boundary": "Food",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "WindowId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Quantity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "DietaryInstructions",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "MealTransactions",
+    "boundary": "Food",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "WindowId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Quantity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ServedAt",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "IssueKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "KitInventory",
+    "boundary": "Kits",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Kind",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Movement",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Quantity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Reference",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RecordedAt",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "KitAllocations",
+    "boundary": "Kits",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Kind",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Quantity",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "KitIssues",
+    "boundary": "Kits",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Kind",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "IssueKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "IssuedAt",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Reason",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReplacesIssueId",
+        "type": "guid",
+        "required": false,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "IdentityVerification",
+    "boundary": "Identity",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "DocumentType",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "DocumentReference",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "VerifiedBy",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "VerifiedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Do not collect document copies by default. Verification status preferred; delete reference after approved purpose ends.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "EmergencyAssistance",
+    "boundary": "Safety",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EmergencyContact",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AccessibilityInstructions",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AssistanceInstructions",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReviewAt",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Short purpose-bound period approved by privacy lead; review immediately after event.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "RestrictedBankDetails",
+    "boundary": "FinanceVault",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipantId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "AccountHolder",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "BankName",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "AccountNumber",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "IFSC",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "VerificationStatus",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "VerifiedBy",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "VerifiedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReviewAt",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Policy decision required before use; delete after approved finance/legal retention and hold review.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "FinancialRequests",
+    "boundary": "Finance",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Category",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "EligiblePaise",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RequestedPaise",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ApprovedPaise",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "MakerId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "FinancialApprovals",
+    "boundary": "FinanceChecker",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "RequestId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Stage",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Decision",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ApproverId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "DecidedAt",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RequestVersion",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "PaymentRecords",
+    "boundary": "FinancePayer",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "RequestId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "AmountPaise",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ExternalReference",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RecordedAt",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RecordedBy",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReconciledAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "BadgeIssues",
+    "boundary": "Registration",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "OpaqueToken",
+        "type": "guid",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "IssuedAt",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Reason",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RevokedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReplacesId",
+        "type": "guid",
+        "required": false,
+        "index": true,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "UserRoles",
+    "boundary": "SecurityAdmin",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EntraObjectId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "RoleId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "StreamId",
+        "type": "guid",
+        "required": false,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ValidUntil",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "RolePermissions",
+    "boundary": "SecurityAdmin",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "RoleId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Resource",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CanView",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CanCreate",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CanEdit",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CanApprove",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CanExport",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CanDelete",
+        "type": "boolean",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "HelpdeskTickets",
+    "boundary": "Helpdesk",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": false,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Category",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Priority",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "OwnerId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Summary",
+        "type": "memo",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "DueAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ResolvedAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "RestrictedIncidents",
+    "boundary": "Safety",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": false,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Category",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Priority",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "OwnerId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Details",
+        "type": "memo",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ReviewAt",
+        "type": "date",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Short purpose-bound period approved by privacy lead; review immediately after event.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "ApprovalHistory",
+    "boundary": "Audit",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "ParticipationId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Workflow",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Stage",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ActorObjectId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Decision",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "At",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RequestKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "Notes",
+        "type": "memo",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Approved audit schedule; lock exports and hold exceptions.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "AuditEvents",
+    "boundary": "Audit",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EntityName",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "EntityId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Action",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ActorObjectId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "At",
+        "type": "datetime",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "CorrelationId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Outcome",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Approved audit schedule; lock exports and hold exceptions.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "CommandQueue",
+    "boundary": "Automation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "EditionId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "EntityId",
+        "type": "guid",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Action",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ExpectedVersion",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RequestKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "Status",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "Attempt",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "NextAttemptAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "ErrorCode",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "WorkflowReceipts",
+    "boundary": "Automation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "RequestKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "Stage",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "State",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "TargetId",
+        "type": "text",
+        "required": false,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "SourceVersion",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "LeaseUntil",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "LastErrorCode",
+        "type": "text",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  },
+  {
+    "name": "NotificationOutbox",
+    "boundary": "Automation",
+    "implementation": "design-only unless listed in sharepoint/core-lists.json",
+    "fields": [
+      {
+        "name": "RecordKey",
+        "type": "guid",
+        "required": true,
+        "unique": true,
+        "index": true
+      },
+      {
+        "name": "CreatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "UpdatedAt",
+        "type": "datetime",
+        "required": true
+      },
+      {
+        "name": "DedupeKey",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      {
+        "name": "Template",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "RecipientObjectId",
+        "type": "text",
+        "required": true,
+        "index": true,
+        "unique": false
+      },
+      {
+        "name": "State",
+        "type": "text",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "Attempts",
+        "type": "integer",
+        "required": true,
+        "index": false,
+        "unique": false
+      },
+      {
+        "name": "SentAt",
+        "type": "datetime",
+        "required": false,
+        "index": false,
+        "unique": false
+      }
+    ],
+    "retention": "Review after event; duration requires approved records schedule and hold policy.",
+    "validation": "GUID references must exist; edition references must agree; immutable annual snapshots; domain rules in requirements/invariants.md."
+  }
+]

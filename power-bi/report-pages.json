@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Command center",
+    "visuals": [
+      "Participations",
+      "Approved",
+      "Registration Completion",
+      "Arrivals Confirmed",
+      "Departures Confirmed"
+    ],
+    "filters": [
+      "Edition",
+      "Authorized streams"
+    ],
+    "status": "initial participation facts only"
+  },
+  {
+    "name": "Participation and geography",
+    "visuals": [
+      "Participants by year/state/district/stream/category",
+      "Repeat versus first-time"
+    ],
+    "filters": [
+      "Edition",
+      "State",
+      "District",
+      "Stream",
+      "Category"
+    ],
+    "status": "sample pseudonymous data; privacy review required"
+  },
+  {
+    "name": "Historical comparison",
+    "visuals": [
+      "Participations trend",
+      "YoY Growth",
+      "Repeat Participations"
+    ],
+    "filters": [
+      "Year range",
+      "Stream"
+    ],
+    "status": "measures require complete history"
+  },
+  {
+    "name": "Operations",
+    "visuals": [
+      "Dated occupancy",
+      "Meal demand/utilization",
+      "Trip utilization",
+      "Venue attendance",
+      "Open issues"
+    ],
+    "status": "not implemented; source facts required"
+  },
+  {
+    "name": "Finance \u2014 separate restricted report",
+    "visuals": [
+      "Approved assistance",
+      "Recorded external payments",
+      "Pending approved totals",
+      "Payment category/year"
+    ],
+    "status": "not implemented; no bank/document fields permitted"
+  }
+]

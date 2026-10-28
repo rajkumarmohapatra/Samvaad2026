@@ -1,0 +1,6 @@
+.\sharepoint\Provision-Core.ps1 `
+  -SiteUrl "https://<tenant>.sharepoint.com/sites/Sambad360Pilot" `
+  -ClientId "<approved-entra-application-client-id>" `
+  -StreamConfiguration ".\deployment\streams.pilot.json" `
+  -PrivateSiteVerified `
+  -WhatIf

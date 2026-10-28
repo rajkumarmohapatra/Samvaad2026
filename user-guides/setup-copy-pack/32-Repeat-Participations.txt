@@ -1,0 +1,5 @@
+Repeat Participations =
+CALCULATE(
+    [Participations],
+    FactParticipation[IsFirstYear] = 0
+)

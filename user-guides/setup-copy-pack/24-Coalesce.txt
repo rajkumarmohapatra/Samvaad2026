@@ -1,0 +1,8 @@
+Coalesce(
+    LookUp(
+        SB_Projection_PILOT,
+        NominationRecordKey = ThisItem.RecordKey,
+        ReviewStatus
+    ),
+    "No review result published"
+)
