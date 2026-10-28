@@ -80,3 +80,7 @@ TESTING enables a fast test-only password hasher; it must not be set on a public
 ## Self-reported tribal information
 
 Participant entry/editing and the portal CSV/XLSX importer support optional `tribal_status` and `tribe_name` fields. Status choices are Tribal, Not Tribal, Prefer not to say, or blank (Not specified). Leave tribe name blank when selecting Not Tribal; otherwise the participant may supply their own wording or leave it unspecified. Existing community information is retained separately and is never used to infer a status or tribe name. These fields are shown only to users authorised to view the detailed profile, not on general reports, badges or participant-directory rows. Existing records remain unspecified after migration. Old import files that omit the optional columns remain valid.
+
+## Workbook fields, dashboard and notifications
+
+The Dashboard and Notifications entries are in the left menu. See [workbook-field mapping](docs/WORKBOOK-FIELD-MAPPING.md) for every source column, validation rule and reporting qualification. The uploaded workbook was used for schema inspection; its private participant records were not loaded by this change. Charts use current authorised portal records, not copied PDF totals. Demographic reporting and edition-wide notification oversight need explicit role permissions for non-superadministrators. Other users can search their own activity. Notification timestamps display in IST and do not contain form values or search queries.

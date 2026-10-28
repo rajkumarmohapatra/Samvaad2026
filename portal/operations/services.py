@@ -12,7 +12,10 @@ from .access import require,require_person,scoped
 
 
 def audit(user,edition,action,p=None,detail=None):
-    return Audit.objects.create(actor=user,edition=edition,participation=p,action=action,detail=detail or {})
+    row=Audit.objects.create(actor=user,edition=edition,participation=p,action=action,detail=detail or {})
+    from .notifications import activity
+    activity(user,edition,action,p=p,record_id=row.pk)
+    return row
 
 
 def mutate(user,edition,key,action,payload,work):
@@ -46,11 +49,11 @@ def nominate(user,edition,key,data,existing=None):
             require_person(user,existing,'participants','edit')
             p=Participation.objects.select_for_update().get(pk=existing.pk)
             if p.review not in ['Draft','Rejected']:raise ValidationError('Submitted or approved records cannot be edited. Request a reviewed correction.')
-            if p.version!=int(data.get('version',p.version)):raise ValidationError('The record changed. Refresh before saving.')
+            if not data.get('version') or p.version!=int(data['version']):raise ValidationError('The record changed. Refresh before saving.')
             master=p.participant
             master.name=name;master.phone=phone
-            for f in ['state','district','village','community','languages','email','preferred_name','alternate_phone']:setattr(master,f,data.get(f,''))
-            for f in ['tribal_status','tribe_name']:
+            for f in ['state','district','village','community','languages','email','preferred_name','alternate_phone','gender','country','state_or_ut','disability_status','sub_tribe']:setattr(master,f,data.get(f,''))
+            for f in ['tribal_status','tribe_name','tribe_reference']:
                 if f in data:setattr(master,f,data[f])
             master.full_clean();master.save()
             p.name_snapshot=name;p.state_snapshot=data['state'];p.primary_stream=stream;p.stream_label=stream.name;p.category=data['category'];p.version+=1
@@ -62,11 +65,21 @@ def nominate(user,edition,key,data,existing=None):
                 if Participation.objects.filter(participant=master,edition=edition).exists():raise ValidationError('Participant already exists in this edition.')
             else:
                 if Participant.objects.filter(name__iexact=name,phone=phone).exists():raise ValidationError('Likely duplicate. Ask an administrator to confirm whether the existing master should be reused.')
-                master=Participant(name=name,phone=phone,**{f:data.get(f,'') for f in ['state','district','village','community','tribal_status','tribe_name','languages','email','preferred_name','alternate_phone']})
+                master=Participant(name=name,phone=phone,**{f:data.get(f,'') for f in ['state','district','village','community','tribal_status','tribe_name','sub_tribe','gender','country','state_or_ut','disability_status','languages','email','preferred_name','alternate_phone']})
+                master.tribe_reference=data.get('tribe_reference')
                 master.full_clean();master.save()
             p=Participation(participant=master,edition=edition,primary_stream=stream,stream_label=stream.name,name_snapshot=name,state_snapshot=data['state'],category=data['category'],nominated_by=user,starts=edition.starts,ends=edition.ends)
         for f in ['travel_eligible','accommodation_eligible','food_eligible','kit_eligible','finance_eligible','accessible_bed_required','accommodation_group','dietary_instructions']:
             if f in data:setattr(p,f,data[f])
+        for f in ['source_identifier','attendee_group','element_representative','registration_spoc','registration_mode','remarks']:
+            if f in data:setattr(p,f,data[f])
+        if p.source_identifier and Participation.objects.filter(edition=edition,source_identifier=p.source_identifier).exclude(pk=p.pk).exists():raise ValidationError('This source participant ID is already used in the selected edition.')
+        technical=['source_created_at','source_item_type','source_path','legacy_qr_reference','photo_reference']
+        if any(data.get(f) for f in technical) and not user.is_superuser:raise PermissionDenied('Only an administrator can update legacy source metadata.')
+        for f in technical:
+            if f in data:setattr(p,f,data[f])
+        if p.photo_reference.startswith(('http://','https://','//')):raise ValidationError('Use a private photo asset reference, not a public URL.')
+        if ParticipantCategory.objects.exists() and not ParticipantCategory.objects.filter(name=p.category,active=True).exists():raise ValidationError('Choose an active configured participant type.')
         p.full_clean();p.save();p.secondary_streams.set(data.get('secondary_streams',[]))
         audit(user,edition,'nomination.updated' if existing else 'nomination.created',p)
         return {'id':str(p.pk)}
@@ -271,3 +284,23 @@ def issue_badge(user,p,key,reason):
         audit(user,p.edition,'badge.issued',p,{'badge':str(row.pk)})
         return {'id':str(row.pk)}
     return mutate(user,p.edition,key,'badge',{'person':p.pk,'reason':reason},work)
+
+
+def save_identity(user,p,key,data):
+    require_person(user,p,'identity','approve')
+    number=data.get('document_number','').strip()
+    doc_type=data['document_type']
+    if doc_type not in ['Aadhaar','Voter ID','PAN','Passport','Other']:raise ValidationError('Choose a supported identity document type.')
+    if number:
+        if doc_type=='Aadhaar' and not re.fullmatch(r'\d{12}',number):raise ValidationError('Aadhaar must contain 12 digits; do not enter it unless retention is approved.')
+        if doc_type=='PAN' and not re.fullmatch(r'[A-Z]{5}[0-9]{4}[A-Z]',number):raise ValidationError('Check the PAN format.')
+        if len(number)>40 or not re.fullmatch(r'[A-Za-z0-9 /-]+',number):raise ValidationError('Check identity number format and length.')
+    reference=data.get('private_reference','').strip()
+    if reference.startswith(('http://','https://','//')):raise ValidationError('Use an approved private asset reference, not a public URL.')
+    cipher=bank_cipher().encrypt(number.encode()).decode() if number else ''
+    def work():
+        row,_=IdentityRecord.objects.update_or_create(participation=p,defaults={'document_type':doc_type,'number_cipher':cipher,'last_four':number[-4:] if number else '', 'private_reference':reference,'entered_by':user})
+        audit(user,p.edition,'identity.record_saved',p)
+        return {'id':str(row.pk)}
+    digest=hashlib.sha256(json.dumps({'number':number,'type':doc_type,'reference':reference},sort_keys=True).encode()).hexdigest()
+    return mutate(user,p.edition,key,'identity.record',{'person':p.pk,'fingerprint':digest},work)

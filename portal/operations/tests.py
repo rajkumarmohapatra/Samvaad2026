@@ -223,3 +223,122 @@ class PortalTests(TestCase):
         self.assertNotContains(response,'Tribal or Not Tribal (self-reported)')
         self.client.force_login(self.admin)
         self.assertNotContains(self.client.get(reverse('reports')),'Synthetic Secret Tribe')
+    def test_source_fields_and_custom_categories(self):
+        from .forms import NominationForm
+        ParticipantCategory.objects.create(name='Atithya')
+        form=NominationForm(user=self.owner,edition=self.edition)
+        self.assertIn(('Atithya','Atithya'),list(form.fields['category'].choices))
+        self.assertNotIn('source_path',form.fields)
+        result=nominate(self.owner,self.edition,self.key(),{**self.data,'category':'Atithya','gender':'Female','country':'Synthetic Country','disability_status':'Yes','sub_tribe':'Synthetic sub-tribe','source_identifier':'SOURCE-001','registration_spoc':'Synthetic Coordinator','element_representative':'Synthetic Owner','attendee_group':'Participant'})
+        p=Participation.objects.get(pk=result['id'])
+        self.assertEqual(p.participant.gender,'Female');self.assertEqual(p.registration_spoc,'Synthetic Coordinator')
+        with self.assertRaises(ValidationError):nominate(self.owner,self.edition,self.key(),{**self.data,'name':'Synthetic Another','phone':'0000000008','category':'Atithya','source_identifier':'SOURCE-001'})
+    def test_source_metadata_admin_only(self):
+        with self.assertRaises(PermissionDenied):nominate(self.owner,self.edition,self.key(),{**self.data,'source_path':'private/source'})
+    def test_profile_choice_and_alternate_phone_validation(self):
+        for field,value in [('gender','Invalid'),('disability_status','Invalid'),('alternate_phone','bad')]:
+            with self.assertRaises(ValidationError):nominate(self.owner,self.edition,self.key(),{**self.data,field:value})
+    def test_notifications_record_user_page_and_timestamp(self):
+        self.client.force_login(self.owner)
+        self.client.get(reverse('participants'))
+        n=Notification.objects.filter(actor=self.owner,action='page.viewed').latest('created_at')
+        self.assertEqual(n.page_name,'participants');self.assertEqual(n.page_path,'/participants/');self.assertTrue(n.created_at)
+        self.assertNotIn('?',n.page_path)
+    def test_notifications_store_operations_and_validation_alerts(self):
+        self.create()
+        self.assertTrue(Notification.objects.filter(actor=self.owner,action='nomination.created').exists())
+        self.client.force_login(self.owner)
+        self.client.post(reverse('nominate'),{'request_key':self.key(),'name':'Synthetic Invalid','phone':'invalid'})
+        self.assertTrue(Notification.objects.filter(actor=self.owner,action='validation.failed',severity='warning').exists())
+    def test_notification_search_and_role_scope(self):
+        own=Notification.objects.create(edition=self.edition,actor=self.owner,action='synthetic.own',message='Visible activity',page_name='nominate')
+        other=Notification.objects.create(edition=self.edition,actor=self.other,action='synthetic.other',message='Hidden activity',page_name='identity')
+        self.client.force_login(self.owner)
+        response=self.client.get(reverse('notifications'),{'q':'synthetic.'})
+        self.assertContains(response,'Visible activity');self.assertNotContains(response,'Hidden activity')
+        self.client.force_login(self.admin)
+        self.assertContains(self.client.get(reverse('notifications'),{'q':'synthetic.'}),'Hidden activity')
+    def test_notification_read_action_cannot_mark_others(self):
+        own=Notification.objects.create(edition=self.edition,actor=self.owner,action='own',message='Own')
+        other=Notification.objects.create(edition=self.edition,actor=self.other,action='other',message='Other')
+        self.client.force_login(self.owner)
+        self.client.post(reverse('mark_notifications_read'),{'notification':[str(own.pk),str(other.pk)]})
+        self.assertTrue(NotificationRead.objects.filter(user=self.owner,notification=own).exists())
+        self.assertFalse(NotificationRead.objects.filter(user=self.owner,notification=other).exists())
+        response=self.client.get(reverse('notifications'),{'read_state':'read','q':'Own'})
+        self.assertContains(response,'Own')
+    def test_notifications_do_not_store_form_values(self):
+        self.client.force_login(self.owner)
+        self.client.post(reverse('nominate'),{'request_key':self.key(),'name':'Sensitive Synthetic Name','phone':'0000000099','email':'synthetic@example.invalid'})
+        rows=Notification.objects.filter(actor=self.owner)
+        for n in rows:
+            self.assertNotIn('Sensitive Synthetic Name',n.message);self.assertNotIn('0000000099',n.message);self.assertNotIn('synthetic@example.invalid',n.message)
+    def test_dashboard_reconciles_and_filters(self):
+        self.create();self.create(1)
+        self.client.force_login(self.admin)
+        response=self.client.get(reverse('dashboard_analytics'))
+        self.assertEqual(response.status_code,200);self.assertEqual(response.context['total'],2)
+        self.assertEqual(sum(r['total'] for r in response.context['matrix']),2)
+        self.assertEqual(sum(r['total'] for r in response.context['trend']),2)
+        response=self.client.post(reverse('dashboard_analytics'),{'state':'Synthetic State','element':'A','registration':'Draft'},follow=True)
+        self.assertEqual(response.status_code,200);self.assertEqual(response.context['total'],2)
+    def test_dashboard_scopes_stream_owner_and_protects_demographics(self):
+        self.create();nominate(self.other,self.edition,self.key(),{**self.data,'name':'Synthetic Other Stream','phone':'0000000008','primary_stream':self.b})
+        self.client.force_login(self.owner)
+        response=self.client.get(reverse('dashboard_analytics'))
+        self.assertEqual(response.status_code,200);self.assertEqual(response.context['total'],1)
+        self.assertFalse(response.context['demographics']);self.assertNotContains(response,'Gender (self-reported)')
+    def test_dashboard_invalid_dates_create_alert(self):
+        self.create();self.client.force_login(self.admin)
+        response=self.client.post(reverse('dashboard_analytics'),{'created_from':'2026-12-20','created_to':'2026-01-01'})
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,'Start date must not be after end date.')
+        self.assertTrue(Notification.objects.filter(actor=self.admin,action='validation.failed').exists())
+    def test_dashboard_empty_and_reset(self):
+        self.client.force_login(self.admin)
+        self.assertEqual(self.client.get(reverse('dashboard_analytics')).context['total'],0)
+        self.client.post(reverse('dashboard_analytics'),{'reset_filters':'1'})
+        self.assertNotIn('dashboard_filters:'+str(self.edition.pk),self.client.session)
+    def test_sensitive_identity_type_capture_and_redaction(self):
+        p=self.create(approved=True)
+        result=save_identity(self.registration,p,self.key(),{'document_type':'Passport','document_number':'','private_reference':'private-asset-001'})
+        self.assertEqual(IdentityRecord.objects.get(pk=result['id']).document_type,'Passport')
+        self.assertEqual(IdentityRecord.objects.get(pk=result['id']).number_cipher,'')
+        n=Notification.objects.filter(action='identity.record_saved').first()
+        self.assertNotIn('private-asset-001',n.message)
+        with self.assertRaises(PermissionDenied):save_identity(self.owner,p,self.key(),{'document_type':'Passport'})
+    def test_identity_format_and_private_reference_validation(self):
+        p=self.create(approved=True)
+        with self.assertRaises(ValidationError):save_identity(self.registration,p,self.key(),{'document_type':'Aadhaar','document_number':'invalid'})
+        with self.assertRaises(ValidationError):save_identity(self.registration,p,self.key(),{'document_type':'Other','private_reference':'https://example.invalid/public'})
+    def test_import_rejects_restricted_or_derived_columns(self):
+        f=io.BytesIO(('name,phone,state,primary_stream,category,ID Proof Number\nSynthetic Import,0000000011,Test,'+str(self.a.pk)+',Delegate,never-stage-this-value\n').encode());f.name='test.csv'
+        with self.assertRaises(ValidationError):preview(self.owner,self.edition,f)
+    def test_dashboard_rows_not_truncated_at_chart_limit(self):
+        from .analytics import bars
+        rows=bars([{'label':f'Synthetic State {i}','total':1} for i in range(30)])
+        self.assertEqual(sum(row['value'] for row in rows),30)
+        self.assertEqual(rows[-1]['label'],'Other groups')
+    def test_tribe_master_reference_is_explicit_and_not_inferred(self):
+        ref=TribeReference.objects.create(name='Synthetic Master Tribe',state='Synthetic State',national_code='SYNTHETIC')
+        result=nominate(self.owner,self.edition,self.key(),{**self.data,'tribal_status':'Tribal','tribe_name':'Participant supplied wording','tribe_reference':ref})
+        p=Participation.objects.get(pk=result['id'])
+        self.assertEqual(p.participant.tribe_reference,ref)
+        self.assertEqual(p.participant.tribe_name,'Participant supplied wording')
+        with self.assertRaises(ValidationError):nominate(self.owner,self.edition,self.key(),{**self.data,'name':'Synthetic Another','phone':'0000000099','tribal_status':'Not Tribal','tribe_reference':ref})
+    def test_activity_links_to_original_audit_without_private_detail(self):
+        p=self.create()
+        row=Audit.objects.filter(participation=p,action='nomination.created').first()
+        n=Notification.objects.get(pk=row.pk)
+        self.assertEqual(n.actor,self.owner)
+        self.assertEqual(n.action,row.action)
+        self.assertNotIn(p.participant.phone,n.message)
+    def test_notifications_date_validation_and_pagination(self):
+        self.client.force_login(self.owner)
+        response=self.client.get(reverse('notifications'),{'from_date':'2026-12-01','to_date':'2026-01-01'})
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,'Start date must not be after end date.')
+        for i in range(45):Notification.objects.create(edition=self.edition,actor=self.owner,action='paging.test',message='Synthetic activity')
+        response=self.client.get(reverse('notifications'),{'q':'paging.test','page':'2'})
+        self.assertEqual(response.context['page'].paginator.count,45)
+        self.assertEqual(len(response.context['page']),5)

@@ -17,6 +17,8 @@ class Command(BaseCommand):
                 for role,resources in DEFAULT_GRANTS.items():
                     for resource,actions in resources.items():
                         for action in actions.split():RolePermission.objects.get_or_create(role=role,resource=resource,action=action)
+            if not ParticipantCategory.objects.exists():
+                ParticipantCategory.objects.bulk_create([ParticipantCategory(name=name) for name in ['Participants','Atithya','Delegate','Delegate Community','Food Stall','Team Samvaad','Crew','Artist','Artisan','Healer','Volunteer','Other']])
             path=Path(__file__).resolve().parents[4]/'data-model/initial-units.json'
             if not Unit.objects.exists():
                 for row in json.loads(path.read_text()):Unit.objects.get_or_create(name=row['name'],defaults={'kind':'Unclassified'})

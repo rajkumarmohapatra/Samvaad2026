@@ -26,3 +26,6 @@ class ReadOnlyAudit(admin.ModelAdmin):
 
 for model in [Audit,Receipt,Badge,Stay,Passenger,KitIssue,MealIssue,Attendance,Claim]:admin.site.register(model,ReadOnlyAudit)
 # Bank ciphertext and assistance records deliberately have no generic admin editor.
+
+for model in [ParticipantCategory,TribeReference]:admin.site.register(model)
+admin.site.register(Notification,ReadOnlyAudit)

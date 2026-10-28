@@ -21,6 +21,12 @@ class NominationForm(forms.Form):
     community=forms.CharField(max_length=180,required=False,label='Self-reported community (optional)')
     tribal_status=forms.ChoiceField(choices=Participant.TRIBAL_STATUS_CHOICES,required=False,label='Tribal or Not Tribal',help_text='Optional, self-reported. Select Not specified or Prefer not to say if appropriate.')
     tribe_name=forms.CharField(max_length=180,required=False,label='Tribe name (optional)',help_text='Enter only the name supplied by the participant; leave blank when Not Tribal is selected.')
+    tribe_reference=forms.ModelChoiceField(queryset=TribeReference.objects.filter(active=True).order_by('state','name'),required=False,label='Approved tribe master reference (optional)',help_text="Choose only an explicitly confirmed reference; the participant wording is preserved separately.")
+    sub_tribe=forms.CharField(max_length=180,required=False,label='Sub-tribe (optional)')
+    gender=forms.ChoiceField(choices=Participant._meta.get_field('gender').choices,required=False)
+    country=forms.CharField(max_length=100,required=False)
+    state_or_ut=forms.CharField(max_length=100,required=False,label='State or UT source label (optional)')
+    disability_status=forms.ChoiceField(choices=Participant._meta.get_field('disability_status').choices,required=False,label='PWD / disability status (optional)',help_text='Self-reported. Assistance details belong in the restricted safety screen.')
     languages=forms.CharField(max_length=180,required=False)
     primary_stream=forms.ModelChoiceField(queryset=Unit.objects.none())
     secondary_streams=forms.ModelMultipleChoiceField(queryset=Unit.objects.none(),required=False)
@@ -33,6 +39,17 @@ class NominationForm(forms.Form):
     accessible_bed_required=forms.BooleanField(required=False)
     accommodation_group=forms.CharField(max_length=30,required=False)
     dietary_instructions=forms.CharField(max_length=200,required=False)
+    source_identifier=forms.CharField(max_length=100,required=False,label='Source / legacy participant ID')
+    attendee_group=forms.ChoiceField(choices=Participation._meta.get_field('attendee_group').choices,required=False,label='Participant or support group')
+    element_representative=forms.CharField(max_length=150,required=False,label='Samvaad element representative')
+    registration_spoc=forms.CharField(max_length=150,required=False,label='Registration SPOC')
+    registration_mode=forms.ChoiceField(choices=Participation._meta.get_field('registration_mode').choices,required=False)
+    remarks=forms.CharField(max_length=1000,required=False,widget=forms.Textarea(attrs={'rows':3}),help_text='Operational notes only; no sensitive health, identity or finance details.')
+    source_created_at=forms.DateTimeField(required=False,widget=forms.DateTimeInput(attrs={'type':'datetime-local'}),label='Source creation date and time (IST)')
+    source_item_type=forms.CharField(max_length=80,required=False)
+    source_path=forms.CharField(max_length=250,required=False)
+    legacy_qr_reference=forms.CharField(max_length=100,required=False,label='Legacy QR reference (not used for new badges)')
+    photo_reference=forms.CharField(max_length=250,required=False,label='Approved private photo reference (no public URL)')
     existing_participant=forms.ModelChoiceField(queryset=Participant.objects.none(),required=False,label='Reuse existing master (administrator only)')
     def __init__(self,*args,user,edition,participation=None,**kwargs):
         super().__init__(*args,**kwargs)
@@ -43,16 +60,24 @@ class NominationForm(forms.Form):
         self.fields['primary_stream'].queryset=enabled
         self.fields['secondary_streams'].queryset=Unit.objects.filter(editionunit__edition=edition,editionunit__active=True,kind='Stream',active=True)
         if user.is_superuser:self.fields['existing_participant'].queryset=Participant.objects.all()
-        else:self.fields.pop('existing_participant')
+        else:
+            self.fields.pop('existing_participant')
+            for field in ['source_created_at','source_item_type','source_path','legacy_qr_reference','photo_reference']:self.fields.pop(field)
+        configured=list(ParticipantCategory.objects.filter(active=True).order_by('name').values_list('name',flat=True))
+        if ParticipantCategory.objects.exists():self.fields['category'].choices=[(x,x) for x in configured]
         self.initial['request_key']=str(uuid.uuid4())
         if participation:
-            self.initial.update({f:getattr(participation.participant,f) for f in ['name','preferred_name','phone','alternate_phone','email','state','district','village','community','tribal_status','tribe_name','languages']})
-            for f in ['version','category','primary_stream','travel_eligible','accommodation_eligible','food_eligible','kit_eligible','finance_eligible','accessible_bed_required','accommodation_group','dietary_instructions']:self.initial[f]=getattr(participation,f)
+            self.initial.update({f:getattr(participation.participant,f) for f in ['name','preferred_name','phone','alternate_phone','email','state','district','village','community','tribal_status','tribe_name','tribe_reference','sub_tribe','gender','country','state_or_ut','disability_status','languages']})
+            for f in ['version','category','primary_stream','travel_eligible','accommodation_eligible','food_eligible','kit_eligible','finance_eligible','accessible_bed_required','accommodation_group','dietary_instructions','source_identifier','attendee_group','element_representative','registration_spoc','registration_mode','remarks']:self.initial[f]=getattr(participation,f)
+            for f in ['source_created_at','source_item_type','source_path','legacy_qr_reference','photo_reference']:
+                if f in self.fields:self.initial[f]=getattr(participation,f)
             self.initial['secondary_streams']=participation.secondary_streams.all()
     def clean(self):
         data=super().clean()
-        if data.get('tribal_status')=='Not Tribal' and data.get('tribe_name'):
+        if data.get('tribal_status')=='Not Tribal' and (data.get('tribe_name') or data.get('tribe_reference')):
             self.add_error('tribe_name','Leave tribe name blank when Not Tribal is selected.')
+        if data.get('alternate_phone') and not __import__('re').fullmatch(r'\d{10,15}',data['alternate_phone']):self.add_error('alternate_phone','Use 10 to 15 digits or leave blank.')
+        if data.get('photo_reference','').startswith(('http://','https://','//')):self.add_error('photo_reference','Use an approved private asset reference, not a public URL.')
         return data
 
 class ImportForm(forms.Form):

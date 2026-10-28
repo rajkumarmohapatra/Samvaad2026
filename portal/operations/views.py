@@ -23,6 +23,7 @@ from .access import can,require,require_person,scoped,full_profile
 from .context import current_edition,editions_for
 from .forms import NominationForm,ImportForm,BootstrapForm,ConfigForm
 from . import services,imports
+from .notifications import flag_validation
 
 
 def health(request):return JsonResponse({'status':'ok','service':'samvaad-360'})
@@ -68,6 +69,7 @@ def bootstrap(request):
                 if User.objects.filter(is_superuser=True).exists():raise Http404()
                 User.objects.create_superuser(username=form.cleaned_data['username'],email=form.cleaned_data['email'],password=form.cleaned_data['password1'])
             messages.success(request,'Administrator created. Sign in, then configure event editions and staff roles.');return redirect('login')
+    if request.method=='POST' and form.errors:flag_validation(request,form.errors)
     return render(request,'operations/form.html',{'form':form,'title':'Create the first administrator','intro':'Use the one-time setup code configured in the hosting secret store. Setup closes after the first administrator is created.'})
 
 @login_required
@@ -118,7 +120,8 @@ def nomination(request,pk=None):
         try:
             result=services.nominate(request.user,e,form.cleaned_data['request_key'],form.cleaned_data,p)
             messages.success(request,'Draft saved. Submit it when ready for review.');return redirect('participant_detail',pk=result['id'])
-        except (ValidationError,PermissionDenied) as ex:form.add_error(None,str(ex))
+        except (ValidationError,PermissionDenied) as ex:flag_validation(request,ex);form.add_error(None,str(ex))
+    if request.method=='POST' and form.errors:flag_validation(request,form.errors)
     return render(request,'operations/form.html',{'form':form,'title':'Edit nomination' if p else 'New nomination','intro':'Use participant-provided information. Community is optional; banking and emergency information are handled in separate restricted screens.'})
 
 @login_required
@@ -126,6 +129,7 @@ def participant_detail(request,pk):
     e=edition_required(request);p=get_object_or_404(scoped(request.user,e),pk=pk)
     permissions={r:can(request.user,e,r,a) and scoped(request.user,e,r,a).filter(pk=p.pk).exists() for r,a in [('review','approve'),('identity','approve'),('arrival','create'),('registration','approve'),('accommodation','create'),('transport','create'),('food','create'),('kits','create'),('venue','create'),('finance','create'),('bank','create'),('badge','create')]}
     context={'p':p,'permissions':permissions,'request_key':str(uuid.uuid4()),'editable':can(request.user,e,'participants','edit') and p.review in ['Draft','Rejected'],'profile_visible':full_profile(request.user,e,p),'timeline':Audit.objects.filter(participation=p).select_related('actor'),'stays':Stay.objects.filter(participation=p).select_related('bed__room__property') if can(request.user,e,'accommodation') else [],'claims':Claim.objects.filter(participation=p) if can(request.user,e,'finance') else [],'badges':Badge.objects.filter(participation=p).order_by('-created_at') if can(request.user,e,'badge') else [],'assigned_sessions':Attendance.objects.filter(participation=p).select_related('session__venue'),'journey_titles':['Nomination','Review','Arrival','Accommodation','Registration','Services','Departure']}
+    if permissions['identity']:context['identity_record']=IdentityRecord.objects.filter(participation=p).first()
     return render(request,'operations/participant.html',context)
 
 @login_required
@@ -133,7 +137,7 @@ def participant_detail(request,pk):
 def journey_action(request,pk,action):
     p=get_object_or_404(Participation,pk=pk,edition=edition_required(request))
     try:services.transition(request.user,p,request_key(request),action,request.POST.get('version','0'),request.POST.get('notes',''));messages.success(request,'Journey updated.')
-    except ValidationError as ex:messages.error(request,str(ex))
+    except ValidationError as ex:flag_validation(request,ex);messages.error(request,str(ex))
     return redirect('participant_detail',pk=pk)
 
 # Operational configuration forms: no ledger/security/status fields are exposed here.
@@ -202,16 +206,17 @@ def config_edit(request,resource,model_name,pk=None):
         try:
             services.mutate(request.user,e,form.cleaned_data['request_key'],'config.'+model_name,{k:str(v) for k,v in form.cleaned_data.items()},work)
             messages.success(request,'Saved.');return redirect('module',resource=resource)
-        except ValidationError as ex:form.add_error(None,str(ex))
+        except ValidationError as ex:flag_validation(request,ex);form.add_error(None,str(ex))
+    if request.method=='POST' and form.errors:flag_validation(request,form.errors)
     return render(request,'operations/form.html',{'form':form,'title':('Edit ' if obj else 'Create ')+model._meta.verbose_name.title(),'intro':'Only records in your assigned event edition are selectable.'})
 
 @login_required
-@sensitive_post_parameters('account_number')
+@sensitive_post_parameters('account_number','document_number')
 def service_form(request,pk,kind):
     e=edition_required(request);p=get_object_or_404(Participation,pk=pk,edition=e)
-    resource={'bed':'accommodation','trip':'transport','kit':'kits','meal':'food','entitlement':'food','session':'venue','attendance':'venue','badge':'badge','bank':'bank','claim':'finance'}.get(kind)
+    resource={'bed':'accommodation','trip':'transport','kit':'kits','meal':'food','entitlement':'food','session':'venue','attendance':'venue','badge':'badge','bank':'bank','claim':'finance','identity':'identity'}.get(kind)
     if not resource:raise Http404()
-    require_person(request.user,p,resource,'create')
+    require_person(request.user,p,resource,'approve' if kind=='identity' else 'create')
     fields={'request_key':forms.CharField(widget=forms.HiddenInput,initial=str(uuid.uuid4()))}
     if kind=='bed':fields.update(bed=forms.ModelChoiceField(Bed.objects.filter(room__property__edition=e,active=True).select_related('room__property')),starts=forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type':'datetime-local'})),ends=forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type':'datetime-local'})))
     if kind=='trip':fields['trip']=forms.ModelChoiceField(Trip.objects.filter(edition=e,status__in=['Planned','Boarding']))
@@ -220,6 +225,7 @@ def service_form(request,pk,kind):
     if kind in ['meal','entitlement']:fields['window']=forms.ModelChoiceField(MealWindow.objects.filter(edition=e))
     if kind in ['session','attendance']:fields['session']=forms.ModelChoiceField(Session.objects.filter(edition=e))
     if kind=='badge':fields['reason']=forms.CharField(initial='Initial issue')
+    if kind=='identity':fields.update(document_type=forms.ChoiceField(choices=[(x,x) for x in ['Aadhaar','Voter ID','PAN','Passport','Other']]),document_number=forms.CharField(required=False,widget=forms.PasswordInput,help_text='Optional. Prefer recording verification without retaining the full number.'),private_reference=forms.CharField(required=False,max_length=250,help_text='Approved private document reference only. No public sharing links.'))
     if kind=='bank':
         fields.update(holder=forms.CharField(max_length=150),bank=forms.CharField(max_length=120),account_number=forms.CharField(widget=forms.PasswordInput,help_text='Stored encrypted; never included in the badge or general reports.'),ifsc=forms.RegexField(r'^[A-Z]{4}0[A-Z0-9]{6}$'))
     if kind=='claim':fields.update(category=forms.CharField(max_length=100),amount=forms.DecimalField(max_digits=10,decimal_places=2,min_value=Decimal('0.01'),label='Requested amount (INR)'))
@@ -239,10 +245,12 @@ def service_form(request,pk,kind):
             elif kind in ['session','attendance']:services.assign_session(request.user,p,k,d['session'],attend=kind=='attendance')
             elif kind=='badge':
                 result=services.issue_badge(request.user,p,k,d['reason']);return redirect('badge_print',pk=result['id'])
+            elif kind=='identity':services.save_identity(request.user,p,k,d)
             elif kind=='bank':services.save_bank(request.user,p,k,d)
             elif kind=='claim':services.finance(request.user,p,k,'request',{'category':d['category'],'amount_paise':int(d['amount']*100)})
             messages.success(request,'Operation recorded.');return redirect('participant_detail',pk=p.pk)
-        except (ValidationError,BankRecord.DoesNotExist) as ex:form.add_error(None,str(ex))
+        except (ValidationError,BankRecord.DoesNotExist) as ex:flag_validation(request,ex);form.add_error(None,str(ex))
+    if request.method=='POST' and form.errors:flag_validation(request,form.errors)
     return render(request,'operations/form.html',{'form':form,'title':kind.title()+' — '+p.name_snapshot,'intro':'This operation is validated and recorded on the server. Payment-related screens record approvals and external references; they do not transfer money.'})
 
 @login_required
@@ -250,7 +258,7 @@ def service_form(request,pk,kind):
 def accommodation_action(request,pk,action):
     stay=get_object_or_404(Stay,pk=pk,participation__edition=edition_required(request))
     try:services.stay_action(request.user,stay,request_key(request),action);messages.success(request,'Accommodation updated.')
-    except ValidationError as ex:messages.error(request,str(ex))
+    except ValidationError as ex:flag_validation(request,ex);messages.error(request,str(ex))
     return redirect('participant_detail',pk=stay.participation_id)
 
 @login_required
@@ -267,7 +275,7 @@ def finance_action(request,pk,action):
         amount=Decimal(request.POST.get('amount','0'))
         services.finance(request.user,claim.participation,request_key(request),action,{'claim':str(claim.pk),'amount_paise':int(amount*100) if amount else claim.requested_paise,'reference':request.POST.get('reference','')})
         messages.success(request,'Finance record updated; no bank transfer was performed.')
-    except (ValidationError,InvalidOperation,ValueError,OverflowError,BankRecord.DoesNotExist) as ex:messages.error(request,str(ex))
+    except (ValidationError,InvalidOperation,ValueError,OverflowError,BankRecord.DoesNotExist) as ex:flag_validation(request,ex);messages.error(request,str(ex))
     return redirect('finance')
 
 @login_required
@@ -307,13 +315,15 @@ def import_people(request):
     if request.method=='POST':
         if request.POST.get('action')=='commit':
             staged=request.session.get('staged_import')
-            if not staged or staged['edition']!=str(e.pk) or staged['batch']!=request.POST.get('batch'):raise ValidationError('Preview the file again before importing.')
+            if not staged or staged['edition']!=str(e.pk) or staged['batch']!=request.POST.get('batch'):
+                flag_validation(request);messages.error(request,'Preview the file again before importing.');return redirect('import_people')
             report=imports.commit(request.user,e,staged['batch'],staged['rows']);staged['rows']=report;request.session['staged_import']=staged;messages.success(request,'Import processed. Review row-level results.')
         elif form.is_valid():
             try:
                 report=imports.preview(request.user,e,form.cleaned_data['file'])
                 request.session['staged_import']={'edition':str(e.pk),'batch':form.cleaned_data['batch'],'rows':report}
             except (ValidationError,ValueError,KeyError) as ex:form.add_error(None,str(ex))
+    if request.method=='POST' and (form.errors or (report and any(row['errors'] for row in report))):flag_validation(request)
     return render(request,'operations/import.html',{'form':form,'report':report,'batch':request.session.get('staged_import',{}).get('batch')})
 
 @login_required
@@ -357,3 +367,72 @@ def my_visit(request):
     for p in rows:
         visits.append({'p':p,'stays':Stay.objects.filter(participation=p,cancelled=False).select_related('bed__room__property'),'trips':Passenger.objects.filter(participation=p,cancelled=False).select_related('trip__vehicle'),'sessions':Attendance.objects.filter(participation=p).select_related('session__venue'),'meals':MealEntitlement.objects.filter(participation=p).select_related('window__location')})
     return render(request,'operations/my_visit.html',{'visits':visits})
+
+@login_required
+def notifications(request):
+    from .notifications import visible_notifications,flag_validation
+    e=current_edition(request);qs=visible_notifications(request.user,e).select_related('actor','edition')
+    from django.db.models import Exists,OuterRef
+    qs=qs.annotate(is_read=Exists(NotificationRead.objects.filter(notification_id=OuterRef('pk'),user=request.user)))
+    class FilterForm(forms.Form):
+        q=forms.CharField(required=False,max_length=120,label='Search user, page, action or message')
+        read_state=forms.ChoiceField(required=False,choices=[('','Read and unread'),('unread','Unread'),('read','Read')])
+        severity=forms.ChoiceField(required=False,choices=[('','All activity and alerts'),('info','Activity'),('warning','Warnings'),('error','Errors')])
+        from_date=forms.DateField(required=False,widget=forms.DateInput(attrs={'type':'date'}))
+        to_date=forms.DateField(required=False,widget=forms.DateInput(attrs={'type':'date'}))
+        def clean(self):
+            d=super().clean()
+            if d.get('from_date') and d.get('to_date') and d['from_date']>d['to_date']:raise forms.ValidationError('Start date must not be after end date.')
+            return d
+    form=FilterForm(request.GET)
+    if form.is_valid():
+        d=form.cleaned_data
+        if d.get('read_state'):qs=qs.filter(is_read=d['read_state']=='read')
+        if d.get('q'):qs=qs.filter(Q(actor__username__icontains=d['q'])|Q(action__icontains=d['q'])|Q(message__icontains=d['q'])|Q(page_name__icontains=d['q'])|Q(page_path__icontains=d['q']))
+        if d.get('severity'):qs=qs.filter(severity=d['severity'])
+        if d.get('from_date'):qs=qs.filter(created_at__date__gte=d['from_date'])
+        if d.get('to_date'):qs=qs.filter(created_at__date__lte=d['to_date'])
+    else:flag_validation(request);qs=qs.none()
+    page=Paginator(qs.order_by('-created_at','-id'),40).get_page(request.GET.get('page'))
+    query=request.GET.copy();query.pop('page',None)
+    return render(request,'operations/notifications.html',{'form':form,'page':page,'query':query.urlencode()})
+
+@login_required
+@require_POST
+def mark_notifications_read(request):
+    from .notifications import visible_notifications
+    keys=request.POST.getlist('notification')[:100]
+    valid=[]
+    for key in keys:
+        try:valid.append(uuid.UUID(key))
+        except ValueError:continue
+    allowed=visible_notifications(request.user,current_edition(request)).filter(pk__in=valid)
+    NotificationRead.objects.bulk_create([NotificationRead(notification=n,user=request.user) for n in allowed],ignore_conflicts=True)
+    messages.success(request,'Selected notifications marked as read.')
+    return redirect('notifications')
+
+@login_required
+def dashboard_analytics(request):
+    from .analytics import DashboardFilters,filtered,summary
+    from .notifications import flag_validation
+    e=edition_required(request)
+    resource='reports' if can(request.user,e,'reports') else 'participants'
+    require(request.user,e,resource)
+    qs=scoped(request.user,e,resource);demographics=can(request.user,e,'demographics')
+    session_key='dashboard_filters:'+str(e.pk)
+    saved=request.session.get(session_key,{})
+    if request.method=='POST':
+        if 'reset_filters' in request.POST:
+            request.session.pop(session_key,None);return redirect('dashboard_analytics')
+        form=DashboardFilters(request.POST,queryset=qs,demographics=demographics)
+        if form.is_valid():
+            saved={k:v.isoformat() if hasattr(v,'isoformat') else v for k,v in form.cleaned_data.items()}
+            request.session[session_key]=saved;return redirect('dashboard_analytics')
+        flag_validation(request);data={}
+    else:
+        form=DashboardFilters(saved or None,queryset=qs,demographics=demographics)
+        if saved and form.is_valid():data=form.cleaned_data
+        else:data={}
+    filtered_qs=filtered(qs,data)
+    context=summary(filtered_qs,demographics);context.update(form=form,refreshed=timezone.now(),demographics=demographics)
+    return render(request,'operations/dashboard_analytics.html',context)

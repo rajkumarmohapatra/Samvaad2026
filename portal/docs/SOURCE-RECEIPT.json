@@ -1,0 +1,17 @@
+{
+  "purpose": "Schema and dashboard-reference inspection only; no raw participant upload to GitHub or the hosted database.",
+  "files": [
+    {
+      "name": "Samvaad Dashboard R4 PDF.pdf",
+      "bytes": 2663013,
+      "sha256": "e941817c1cbfff862178b2afc05e500f3a77e344788318e0c4f94210b3ba27f5",
+      "present_when_inspected": true
+    },
+    {
+      "name": "Samvaad 2026 Tribe Master + other data 26-10-26.xlsx",
+      "bytes": 4324862,
+      "sha256": "264db83f3479dad6ec9d9ead80f06a091b5b73d7cb831ddd1fed692a4019cbe9",
+      "present_when_inspected": true
+    }
+  ]
+}

@@ -5,7 +5,7 @@ from .forms import NominationForm
 from .models import Participant,Receipt
 from .services import nominate
 
-HEADERS=['name','phone','state','district','community','tribal_status','tribe_name','primary_stream','category']
+HEADERS=['name','preferred_name','phone','alternate_phone','email','gender','country','state_or_ut','state','district','village','community','tribal_status','tribe_name','sub_tribe','disability_status','languages','primary_stream','category','source_identifier','attendee_group','element_representative','registration_spoc','registration_mode','remarks']
 
 def preview(user,edition,upload):
     content=upload.read()
@@ -19,19 +19,26 @@ def preview(user,edition,upload):
         try:
             ws=wb['Participants'] if 'Participants' in wb.sheetnames else wb.active
             values=ws.iter_rows(values_only=True);headers=[str(x or '').strip() for x in next(values)]
-            raw=[dict(zip(headers,[str(x) if x is not None else '' for x in row])) for row in values]
+            if len(headers)>100:raise ValidationError('Too many worksheet columns.')
+            raw=[]
+            for row in values:
+                raw.append(dict(zip(headers,[str(x) if x is not None else '' for x in row])))
+                if len(raw)>5000:raise ValidationError('Maximum 5,000 rows per import.')
         finally:wb.close()
     else:
         try:raw=list(csv.DictReader(io.StringIO(content.decode('utf-8-sig'))))
         except (UnicodeDecodeError,csv.Error):raise ValidationError('Use UTF-8 CSV with the supplied headers.')
     if len(raw)>5000:raise ValidationError('Maximum 5,000 rows per import.')
+    if raw and set(raw[0])-set(HEADERS):raise ValidationError('Unsupported columns. Use the portal template; identity numbers, photos and calculated helper columns must not be placed in this import.')
     if raw and not set(['name','phone','state','primary_stream','category']).issubset(raw[0]):raise ValidationError('Use the portal template: name,phone,state,primary_stream,category are required.')
     report=[];seen=set()
     for n,row in enumerate(raw,2):
         if not any(str(x).strip() for x in row.values()):continue
         data={str(k).strip():str(v or '').strip() for k,v in row.items() if k is not None}
         status=data.get('tribal_status','')
-        data['tribal_status']={'tribal':'Tribal','not tribal':'Not Tribal','not_tribal':'Not Tribal','prefer not to say':'Prefer not to say','not specified':''}.get(status.casefold(),status)
+        data['tribal_status']={'tribal':'Tribal','not tribal':'Not Tribal','non-tribal':'Not Tribal','non tribal':'Not Tribal','not_tribal':'Not Tribal','prefer not to say':'Prefer not to say','not specified':''}.get(status.casefold(),status)
+        for field in ['disability_status']:
+            value=data.get(field,'');data[field]={'yes':'Yes','no':'No','prefer not to say':'Prefer not to say'}.get(value.casefold(),value)
         data['request_key']=str(uuid.uuid4());data['food_eligible']='on';data['kit_eligible']='on'
         f=NominationForm(data,user=user,edition=edition)
         errors=[]

@@ -21,4 +21,4 @@ def common(request):
     if e:
         for name,label in [('participants','Participants'),('accommodation','Accommodation'),('transport','Transport'),('food','Food'),('kits','Kits'),('venue','Venues & sessions'),('finance','Finance'),('tickets','Helpdesk'),('assistance','Safety & assistance'),('reports','Reports')]:
             if can(request.user,e,name):nav.append((name,label))
-    return {'current_edition':e,'editions':editions_for(request.user),'navigation':nav,'roles':role_names(request.user,e) if e else [],'demo_mode':settings.DEMO_MODE}
+    return {'show_dashboard':bool(e and (can(request.user,e,'participants') or can(request.user,e,'reports'))),'current_edition':e,'editions':editions_for(request.user),'navigation':nav,'roles':role_names(request.user,e) if e else [],'demo_mode':settings.DEMO_MODE}

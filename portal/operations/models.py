@@ -62,7 +62,7 @@ class Participant(Record):
     name=models.CharField(max_length=150)
     preferred_name=models.CharField(max_length=100,blank=True)
     phone=models.CharField(max_length=20,validators=[RegexValidator(r'^\d{10,15}$','Use 10 to 15 digits.')],db_index=True)
-    alternate_phone=models.CharField(max_length=20,blank=True)
+    alternate_phone=models.CharField(max_length=20,blank=True,validators=[RegexValidator(r'^\d{10,15}$','Use 10 to 15 digits or leave blank.')])
     email=models.EmailField(blank=True)
     state=models.CharField(max_length=80)
     district=models.CharField(max_length=100,blank=True)
@@ -70,12 +70,18 @@ class Participant(Record):
     community=models.CharField(max_length=180,blank=True,help_text='Optional, self-reported; never inferred.')
     tribal_status=models.CharField('Tribal or Not Tribal',max_length=20,choices=TRIBAL_STATUS_CHOICES,blank=True,default='',help_text='Optional, self-reported. Do not infer this from community, name or location.')
     tribe_name=models.CharField(max_length=180,blank=True,default='',help_text='Optional tribe name, exactly as supplied by the participant.')
+    gender=models.CharField(max_length=30,blank=True,choices=[('', 'Not specified'),('Male','Male'),('Female','Female'),('Other','Other / self-described'),('Prefer not to say','Prefer not to say')])
+    country=models.CharField(max_length=100,blank=True)
+    state_or_ut=models.CharField(max_length=100,blank=True,help_text='Original state/UT classification or label, if supplied.')
+    disability_status=models.CharField(max_length=20,blank=True,choices=[('', 'Not specified'),('Yes','Yes'),('No','No'),('Prefer not to say','Prefer not to say')],help_text='Optional, self-reported PWD status; not a medical diagnosis.')
+    sub_tribe=models.CharField(max_length=180,blank=True)
+    tribe_reference=models.ForeignKey('TribeReference',on_delete=models.PROTECT,null=True,blank=True,help_text='Optional approved master reference; never inferred from name or location.')
     languages=models.CharField(max_length=180,blank=True)
     user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True,related_name='participant_profile')
     def __str__(self):return self.name
     def clean(self):
         super().clean()
-        if self.tribal_status=='Not Tribal' and self.tribe_name.strip():
+        if self.tribal_status=='Not Tribal' and (self.tribe_name.strip() or self.tribe_reference_id):
             raise ValidationError({'tribe_name':'Leave tribe name blank when Not Tribal is selected.'})
 
 class Participation(Record):
@@ -106,9 +112,20 @@ class Participation(Record):
     dietary_instructions=models.CharField(max_length=200,blank=True)
     accessible_bed_required=models.BooleanField(default=False)
     accommodation_group=models.CharField(max_length=30,blank=True,help_text='Configured operational compatibility group; no inferred identity.')
+    source_identifier=models.CharField(max_length=100,blank=True)
+    attendee_group=models.CharField(max_length=20,blank=True,choices=[('', 'Not specified'),('Participant','Participant'),('Support','Support / non-participant')])
+    element_representative=models.CharField(max_length=150,blank=True)
+    registration_spoc=models.CharField(max_length=150,blank=True)
+    registration_mode=models.CharField(max_length=40,blank=True,choices=[('', 'Not specified'),('Desk','Desk'),('Online','Online'),('Import','Import'),('Other','Other')])
+    remarks=models.CharField(max_length=1000,blank=True,help_text='Operational notes only. Do not enter identity, health or banking information here.')
+    photo_reference=models.CharField(max_length=250,blank=True,help_text='Approved private asset reference only; no public sharing links or photo uploads.')
+    source_created_at=models.DateTimeField(null=True,blank=True)
+    source_item_type=models.CharField(max_length=80,blank=True)
+    source_path=models.CharField(max_length=250,blank=True)
+    legacy_qr_reference=models.CharField(max_length=100,blank=True,help_text='Legacy reference only. New badges always use a fresh opaque token.')
     version=models.PositiveIntegerField(default=1)
     class Meta:
-        constraints=[models.UniqueConstraint(fields=['participant','edition'],name='unique_person_edition'),models.CheckConstraint(condition=Q(ends__gte=models.F('starts')),name='participation_dates_order')]
+        constraints=[models.UniqueConstraint(fields=['participant','edition'],name='unique_person_edition'),models.UniqueConstraint(fields=['edition','source_identifier'],condition=~Q(source_identifier=''),name='unique_source_id_per_edition'),models.CheckConstraint(condition=Q(ends__gte=models.F('starts')),name='participation_dates_order')]
         indexes=[models.Index(fields=['edition','primary_stream','review'])]
     def __str__(self):return f'{self.name_snapshot} / {self.edition}'
 
@@ -311,3 +328,45 @@ class LoginAttempt(models.Model):
     key=models.CharField(primary_key=True,max_length=64)
     failures=models.PositiveIntegerField(default=0)
     last_at=models.DateTimeField(auto_now=True)
+
+
+class ParticipantCategory(Record):
+    name=models.CharField(max_length=60,unique=True)
+    active=models.BooleanField(default=True)
+    def __str__(self):return self.name
+
+class TribeReference(Record):
+    unique_code=models.CharField(max_length=80,blank=True)
+    national_code=models.CharField(max_length=80,blank=True)
+    sub_code=models.CharField(max_length=80,blank=True)
+    name=models.CharField(max_length=180)
+    sub_tribe=models.CharField(max_length=180,blank=True)
+    state=models.CharField(max_length=100,blank=True)
+    active=models.BooleanField(default=True)
+    def __str__(self):return f'{self.name} / {self.state}'
+
+class IdentityRecord(Record):
+    participation=models.OneToOneField(Participation,on_delete=models.PROTECT)
+    document_type=models.CharField(max_length=50)
+    number_cipher=models.TextField(blank=True)
+    last_four=models.CharField(max_length=4,blank=True)
+    private_reference=models.CharField(max_length=250,blank=True)
+    entered_by=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT)
+
+class Notification(Record):
+    edition=models.ForeignKey(Edition,on_delete=models.PROTECT,null=True,blank=True)
+    actor=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,null=True,blank=True)
+    participation=models.ForeignKey(Participation,on_delete=models.PROTECT,null=True,blank=True)
+    action=models.CharField(max_length=100)
+    severity=models.CharField(max_length=10,choices=[('info','Activity'),('warning','Warning'),('error','Alert')],default='info')
+    message=models.CharField(max_length=240)
+    page_name=models.CharField(max_length=120,blank=True)
+    page_path=models.CharField(max_length=250,blank=True)
+    class Meta:
+        ordering=['-created_at']
+        indexes=[models.Index(fields=['edition','created_at']),models.Index(fields=['actor','created_at']),models.Index(fields=['severity','created_at'])]
+
+class NotificationRead(Record):
+    notification=models.ForeignKey(Notification,on_delete=models.CASCADE)
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    class Meta:constraints=[models.UniqueConstraint(fields=['notification','user'],name='unique_notification_reader')]

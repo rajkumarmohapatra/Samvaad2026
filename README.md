@@ -4,6 +4,10 @@ A standalone event operations portal for the participant journey at Samvaad. **T
 
 ## Start here
 
+[Live portal](https://samvaad-1xpw.onrender.com) · [Dashboard](https://samvaad-1xpw.onrender.com/dashboard/) · [Notifications](https://samvaad-1xpw.onrender.com/notifications/)
+
+The dashboard and participant fields are aligned with the owner-supplied workbook/PDF references. Source attachments and their private participant records are not published here or automatically imported. See [field mapping](portal/docs/WORKBOOK-FIELD-MAPPING.md).
+
 - [Native web portal: run, configure and deploy](portal/README.md)
 - [Native implementation and verification status](portal/STATUS.md)
 - [Native application source](portal/operations/)
@@ -17,7 +21,7 @@ The Microsoft guides describe the earlier architecture. They are retained for re
 
 Participant nominations and versioned journey changes; CSV/XLSX validation/import; approvals and identity status; independent arrival/registration; dated bed reservations/check-in/check-out; vehicle/trip capacity; food entitlements/meal recording; kit stock and replacements; sessions/attendance; restricted finance approvals and external payment recording; encrypted bank storage; printable opaque QR badges; helpdesk/sensitive cases; protected aggregate reports; administrator-linked participant-only itineraries.
 
-**Pilot source, not a production-completeness claim.** The native suite has 35 local tests. The earlier domain/artifact suite has 36 local tests. Hosted PostgreSQL concurrency, live browser operation, backup/restore, full privacy review and the remaining enterprise features are not yet accepted. See the native README for explicit limitations. Nothing here transfers money or authenticates someone using only a badge token.
+**Pilot source, not a production-completeness claim.** The native suite has 62 local tests. The earlier domain/artifact suite has 36 local tests. Hosted PostgreSQL concurrency, live browser operation, backup/restore, full privacy review and the remaining enterprise features are not yet accepted. See the native README for explicit limitations. Nothing here transfers money or authenticates someone using only a badge token.
 
 ## Local native development
 

@@ -15,7 +15,7 @@ urlpatterns=[
  path('stays/<uuid:pk>/<str:action>/',v.accommodation_action,name='stay_action'),
  path('finance/',v.finance_list,name='finance'),path('finance/<uuid:pk>/<str:action>/',v.finance_action,name='finance_action'),
  path('badges/<uuid:pk>/',v.badge_print,name='badge_print'),path('badges/<uuid:pk>/qr.svg',v.badge_qr,name='badge_qr'),
- path('reports/',v.reports,name='reports'),path('my-visit/',v.my_visit,name='my_visit'),
+ path('dashboard/',v.dashboard_analytics,name='dashboard_analytics'),path('notifications/',v.notifications,name='notifications'),path('notifications/read/',v.mark_notifications_read,name='mark_notifications_read'),path('reports/',v.reports,name='reports'),path('my-visit/',v.my_visit,name='my_visit'),
  path('operations/<str:resource>/',v.module,name='module'),path('operations/<str:resource>/<str:model_name>/new/',v.config_edit,name='config_create'),
  path('operations/<str:resource>/<str:model_name>/<uuid:pk>/edit/',v.config_edit,name='config_edit'),
 ]
