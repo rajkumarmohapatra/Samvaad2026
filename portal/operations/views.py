@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError,PermissionDenied
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import transaction,models
 from django.db.models import Q,Count,Sum
 from django.forms import modelform_factory
 from django.http import Http404,HttpResponse,JsonResponse
@@ -436,3 +436,50 @@ def dashboard_analytics(request):
     filtered_qs=filtered(qs,data)
     context=summary(filtered_qs,demographics);context.update(form=form,refreshed=timezone.now(),demographics=demographics)
     return render(request,'operations/dashboard_analytics.html',context)
+
+
+@login_required
+def masters(request, kind=None):
+    # Configuration authority is deliberately separate from operational staff access.
+    if not request.user.is_active or not request.user.is_superuser:
+        raise PermissionDenied('Only a super administrator can manage masters.')
+    from .masters import MASTERS
+    if kind is None:
+        sections=[{'key':key,'label':label,'count':model.objects.count()} for key,(model,label,fields) in MASTERS.items()]
+        return render(request,'operations/masters.html',{'title':'Masters','sections':sections})
+    if kind not in MASTERS:raise Http404()
+    model,label,fields=MASTERS[kind]
+    qs=model.objects.all().order_by('name' if hasattr(model,'name') else '-created_at')
+    query=request.GET.get('q','').strip()[:200]
+    if query:
+        condition=Q()
+        for field in fields:
+            if isinstance(model._meta.get_field(field),(models.CharField,models.TextField)):
+                condition |= Q(**{field+'__icontains':query})
+        qs=qs.filter(condition)
+    state=request.GET.get('state','').strip()[:100]
+    if model is TribeReference and state:qs=qs.filter(state=state)
+    active=request.GET.get('active','')
+    if hasattr(model,'active') and active in ['yes','no']:qs=qs.filter(active=active=='yes')
+    page=Paginator(qs,40).get_page(request.GET.get('page'))
+    records=[{'pk':obj.pk,'cells':[getattr(obj,field) for field in fields]} for obj in page]
+    params=request.GET.copy();params.pop('page',None)
+    return render(request,'operations/master_list.html',{'title':label,'kind':kind,'fields':fields,'records':records,'page':page,'query':query,'state':state,'active':active,'has_active':hasattr(model,'active'),'states':TribeReference.objects.order_by('state').values_list('state',flat=True).distinct() if model is TribeReference else [],'pagination_query':params.urlencode()})
+
+@login_required
+def master_edit(request,kind,pk=None):
+    if not request.user.is_active or not request.user.is_superuser:raise PermissionDenied('Only a super administrator can manage masters.')
+    from .masters import MASTERS,MasterForm
+    if kind not in MASTERS:raise Http404()
+    model,label,fields=MASTERS[kind]
+    obj=get_object_or_404(model,pk=pk) if pk else None
+    Form=modelform_factory(model,form=MasterForm,fields=fields,widgets={name:forms.DateInput(attrs={'type':'date'}) for name in ['starts','ends'] if name in fields})
+    form=Form(request.POST or None,instance=obj)
+    if request.method=='POST' and form.is_valid():
+        with transaction.atomic():
+            record=form.save()
+            services.audit(request.user,None,'masters.updated' if pk else 'masters.created',detail={'master':kind,'id':str(record.pk)})
+        messages.success(request,'Master saved. Existing participant records were not rewritten.')
+        return redirect('master_list',kind=kind)
+    if request.method=='POST' and form.errors:flag_validation(request,form.errors)
+    return render(request,'operations/master_form.html',{'title':('Edit ' if pk else 'Add ')+label,'form':form,'kind':kind})

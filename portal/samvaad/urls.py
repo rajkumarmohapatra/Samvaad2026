@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from operations import views as v
 urlpatterns=[
+ path('masters/',v.masters,name='masters'),path('masters/<slug:kind>/',v.masters,name='master_list'),path('masters/<slug:kind>/new/',v.master_edit,name='master_create'),path('masters/<slug:kind>/<uuid:pk>/edit/',v.master_edit,name='master_edit'),
  path('healthz',v.health,name='health'),path('setup/',v.bootstrap,name='setup'),
  path('login/',v.SecureLogin.as_view(),name='login'),path('logout/',auth_views.LogoutView.as_view(),name='logout'),
  path('password/change/',auth_views.PasswordChangeView.as_view(template_name='operations/form.html',success_url='/'),name='password_change'),

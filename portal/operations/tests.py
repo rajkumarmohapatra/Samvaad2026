@@ -342,3 +342,54 @@ class PortalTests(TestCase):
         response=self.client.get(reverse('notifications'),{'q':'paging.test','page':'2'})
         self.assertEqual(response.context['page'].paginator.count,45)
         self.assertEqual(len(response.context['page']),5)
+    def test_master_menu_and_global_configuration(self):
+        self.client.force_login(self.admin)
+        self.assertContains(self.client.get('/masters/'),'Tribes')
+        self.assertContains(self.client.get('/'),'Masters')
+        for kind in ['tribes','categories','units','events','editions','edition-units']:
+            self.assertEqual(self.client.get('/masters/'+kind+'/').status_code,200)
+            self.assertEqual(self.client.get('/masters/'+kind+'/new/').status_code,200)
+    def test_master_backend_access_denied(self):
+        self.client.force_login(self.owner)
+        for path in ['/masters/','/masters/tribes/','/masters/tribes/new/']:
+            self.assertEqual(self.client.get(path).status_code,403)
+        self.assertEqual(self.client.post('/masters/categories/new/',{'name':'Unauthorized','active':'on'}).status_code,403)
+        self.assertFalse(ParticipantCategory.objects.filter(name='Unauthorized').exists())
+    def test_master_add_edit_and_notification(self):
+        self.client.force_login(self.admin)
+        response=self.client.post('/masters/tribes/new/',{'name':'Synthetic Reference','state':'Synthetic State','unique_code':'SYN-001','national_code':'SYN','active':'on'})
+        self.assertEqual(response.status_code,302)
+        row=TribeReference.objects.get(unique_code='SYN-001')
+        response=self.client.post(f'/masters/tribes/{row.pk}/edit/',{'name':'Synthetic Revised','state':'Synthetic State','unique_code':'SYN-001','national_code':'SYN'})
+        self.assertEqual(response.status_code,302)
+        row.refresh_from_db();self.assertFalse(row.active)
+        self.assertTrue(Notification.objects.filter(actor=self.admin,action='masters.updated',page_name='master_edit').exists())
+    def test_master_validation_and_search(self):
+        self.client.force_login(self.admin)
+        TribeReference.objects.create(name='Synthetic One',unique_code='SYN-01',state='Synthetic State')
+        response=self.client.post('/masters/tribes/new/',{'name':'Synthetic Duplicate','unique_code':'SYN-01','active':'on'})
+        self.assertContains(response,'This reference code already exists.')
+        response=self.client.post('/masters/tribes/new/',{'name':'Omitted','active':'on'})
+        self.assertContains(response,'Omitted source entries must remain inactive.')
+        self.assertEqual(TribeReference.objects.filter(unique_code='SYN-01').count(),1)
+        response=self.client.get('/masters/tribes/',{'q':'SYN-01','state':'Synthetic State','active':'yes'})
+        self.assertEqual(response.context['page'].paginator.count,1)
+        self.assertContains(response,'Synthetic One')
+    def test_source_master_migration_complete_and_non_destructive(self):
+        import importlib
+        from django.apps import apps
+        source=importlib.import_module('operations.migrations.0007_seed_supplied_tribe_master')
+        self.assertEqual(len(source.ROWS),754)
+        self.assertEqual(len({r['unique_code'] for r in source.ROWS}),754)
+        self.assertEqual(sum(not r['active'] for r in source.ROWS),15)
+        self.assertEqual(TribeReference.objects.filter(unique_code__in=[r['unique_code'] for r in source.ROWS]).count(),754)
+        row=TribeReference.objects.get(unique_code=source.ROWS[0]['unique_code']);row.name='Administrator correction';row.save()
+        source.seed(apps,None)
+        row.refresh_from_db();self.assertEqual(row.name,'Administrator correction')
+    def test_master_editions_invalid_dates_and_unknown_master(self):
+        self.client.force_login(self.admin)
+        response=self.client.post('/masters/editions/new/',{'event':self.event.pk,'year':'2099','title':'Synthetic invalid dates','starts':'2099-12-02','ends':'2099-12-01'})
+        self.assertEqual(response.status_code,200)
+        self.assertTrue(response.context['form'].errors)
+        self.assertEqual(self.client.get('/masters/participants/').status_code,404)
+        self.assertEqual(self.client.get('/masters/tribes/?page=99999').status_code,200)
