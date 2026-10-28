@@ -170,3 +170,56 @@ class PortalTests(TestCase):
         for n in range(8):self.client.post(reverse('login'),{'username':'unknown','password':'incorrect'})
         self.assertEqual(self.client.post(reverse('login'),{'username':'unknown','password':'incorrect'}).status_code,429)
     def test_unauthenticated_redirect(self):self.assertEqual(self.client.get(reverse('participants')).status_code,302)
+    def test_self_reported_tribal_fields_save_and_edit(self):
+        result=nominate(self.owner,self.edition,self.key(),{**self.data,'tribal_status':'Tribal','tribe_name':'Synthetic Tribe'})
+        p=Participation.objects.get(pk=result['id'])
+        self.assertEqual(p.participant.tribal_status,'Tribal')
+        self.assertEqual(p.participant.tribe_name,'Synthetic Tribe')
+        from .forms import NominationForm
+        form=NominationForm(user=self.owner,edition=self.edition,participation=p)
+        self.assertEqual(form.initial['tribal_status'],'Tribal')
+        self.assertEqual(form.initial['tribe_name'],'Synthetic Tribe')
+        nominate(self.owner,self.edition,self.key(),{**self.data,'version':p.version,'tribal_status':'Not Tribal','tribe_name':''},p)
+        p.participant.refresh_from_db()
+        self.assertEqual(p.participant.tribal_status,'Not Tribal')
+        self.assertEqual(p.participant.tribe_name,'')
+    def test_tribal_fields_default_unspecified_without_inference(self):
+        result=nominate(self.owner,self.edition,self.key(),{**self.data,'community':'Synthetic Community'})
+        p=Participation.objects.get(pk=result['id'])
+        self.assertEqual(p.participant.tribal_status,'')
+        self.assertEqual(p.participant.tribe_name,'')
+    def test_prefer_not_to_say_is_supported(self):
+        result=nominate(self.owner,self.edition,self.key(),{**self.data,'tribal_status':'Prefer not to say'})
+        self.assertEqual(Participation.objects.get(pk=result['id']).participant.tribal_status,'Prefer not to say')
+    def test_invalid_tribal_status_fails_backend_validation(self):
+        with self.assertRaises(ValidationError):nominate(self.owner,self.edition,self.key(),{**self.data,'tribal_status':'Inferred'})
+        self.assertEqual(Participant.objects.count(),0)
+    def test_not_tribal_with_tribe_name_is_rejected(self):
+        with self.assertRaises(ValidationError):nominate(self.owner,self.edition,self.key(),{**self.data,'tribal_status':'Not Tribal','tribe_name':'Synthetic Tribe'})
+        self.assertEqual(Participant.objects.count(),0)
+    def test_import_accepts_optional_tribal_columns(self):
+        from .imports import HEADERS
+        self.assertIn('tribal_status',HEADERS);self.assertIn('tribe_name',HEADERS)
+        f=io.BytesIO(('name,phone,state,primary_stream,category,tribal_status,tribe_name\nSynthetic Import,0000000011,Test,'+str(self.a.pk)+',Delegate,tribal,Synthetic Tribe\nSynthetic Other,0000000012,Test,'+str(self.a.pk)+',Delegate,not tribal,\n').encode());f.name='test.csv'
+        report=preview(self.owner,self.edition,f)
+        self.assertTrue(all(not row['errors'] for row in report))
+        commit(self.owner,self.edition,'tribal-import',report)
+        self.assertEqual(Participant.objects.get(name='Synthetic Import').tribe_name,'Synthetic Tribe')
+        self.assertEqual(Participant.objects.get(name='Synthetic Other').tribal_status,'Not Tribal')
+    def test_import_reports_tribal_validation_errors(self):
+        f=io.BytesIO(('name,phone,state,primary_stream,category,tribal_status,tribe_name\nSynthetic Import,0000000011,Test,'+str(self.a.pk)+',Delegate,Not Tribal,Synthetic Tribe\n').encode());f.name='test.csv'
+        report=preview(self.owner,self.edition,f)
+        self.assertTrue(report[0]['errors'])
+        self.assertTrue(any('tribe_name' in error for error in report[0]['errors']))
+    def test_tribal_fields_only_visible_to_authorised_profile_roles(self):
+        result=nominate(self.owner,self.edition,self.key(),{**self.data,'tribal_status':'Tribal','tribe_name':'Synthetic Secret Tribe'})
+        p=Participation.objects.get(pk=result['id'])
+        self.client.force_login(self.owner)
+        self.assertContains(self.client.get(reverse('participant_detail',args=[p.pk])),'Synthetic Secret Tribe')
+        self.client.force_login(self.maker)
+        response=self.client.get(reverse('participant_detail',args=[p.pk]))
+        self.assertEqual(response.status_code,200)
+        self.assertNotContains(response,'Synthetic Secret Tribe')
+        self.assertNotContains(response,'Tribal or Not Tribal (self-reported)')
+        self.client.force_login(self.admin)
+        self.assertNotContains(self.client.get(reverse('reports')),'Synthetic Secret Tribe')

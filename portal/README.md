@@ -76,3 +76,7 @@ TESTING=1 ../.venv/bin/python manage.py test operations
 ```
 
 TESTING enables a fast test-only password hasher; it must not be set on a public deployment. Live sign-in uses Django's production password hashers. Test fixtures are synthetic.
+
+## Self-reported tribal information
+
+Participant entry/editing and the portal CSV/XLSX importer support optional `tribal_status` and `tribe_name` fields. Status choices are Tribal, Not Tribal, Prefer not to say, or blank (Not specified). Leave tribe name blank when selecting Not Tribal; otherwise the participant may supply their own wording or leave it unspecified. Existing community information is retained separately and is never used to infer a status or tribe name. These fields are shown only to users authorised to view the detailed profile, not on general reports, badges or participant-directory rows. Existing records remain unspecified after migration. Old import files that omit the optional columns remain valid.

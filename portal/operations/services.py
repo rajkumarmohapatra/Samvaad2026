@@ -50,6 +50,8 @@ def nominate(user,edition,key,data,existing=None):
             master=p.participant
             master.name=name;master.phone=phone
             for f in ['state','district','village','community','languages','email','preferred_name','alternate_phone']:setattr(master,f,data.get(f,''))
+            for f in ['tribal_status','tribe_name']:
+                if f in data:setattr(master,f,data[f])
             master.full_clean();master.save()
             p.name_snapshot=name;p.state_snapshot=data['state'];p.primary_stream=stream;p.stream_label=stream.name;p.category=data['category'];p.version+=1
         else:
@@ -60,7 +62,7 @@ def nominate(user,edition,key,data,existing=None):
                 if Participation.objects.filter(participant=master,edition=edition).exists():raise ValidationError('Participant already exists in this edition.')
             else:
                 if Participant.objects.filter(name__iexact=name,phone=phone).exists():raise ValidationError('Likely duplicate. Ask an administrator to confirm whether the existing master should be reused.')
-                master=Participant(name=name,phone=phone,**{f:data.get(f,'') for f in ['state','district','village','community','languages','email','preferred_name','alternate_phone']})
+                master=Participant(name=name,phone=phone,**{f:data.get(f,'') for f in ['state','district','village','community','tribal_status','tribe_name','languages','email','preferred_name','alternate_phone']})
                 master.full_clean();master.save()
             p=Participation(participant=master,edition=edition,primary_stream=stream,stream_label=stream.name,name_snapshot=name,state_snapshot=data['state'],category=data['category'],nominated_by=user,starts=edition.starts,ends=edition.ends)
         for f in ['travel_eligible','accommodation_eligible','food_eligible','kit_eligible','finance_eligible','accessible_bed_required','accommodation_group','dietary_instructions']:

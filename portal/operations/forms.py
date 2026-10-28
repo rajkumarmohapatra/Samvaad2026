@@ -19,6 +19,8 @@ class NominationForm(forms.Form):
     district=forms.CharField(max_length=100,required=False)
     village=forms.CharField(max_length=120,required=False)
     community=forms.CharField(max_length=180,required=False,label='Self-reported community (optional)')
+    tribal_status=forms.ChoiceField(choices=Participant.TRIBAL_STATUS_CHOICES,required=False,label='Tribal or Not Tribal',help_text='Optional, self-reported. Select Not specified or Prefer not to say if appropriate.')
+    tribe_name=forms.CharField(max_length=180,required=False,label='Tribe name (optional)',help_text='Enter only the name supplied by the participant; leave blank when Not Tribal is selected.')
     languages=forms.CharField(max_length=180,required=False)
     primary_stream=forms.ModelChoiceField(queryset=Unit.objects.none())
     secondary_streams=forms.ModelMultipleChoiceField(queryset=Unit.objects.none(),required=False)
@@ -44,9 +46,14 @@ class NominationForm(forms.Form):
         else:self.fields.pop('existing_participant')
         self.initial['request_key']=str(uuid.uuid4())
         if participation:
-            self.initial.update({f:getattr(participation.participant,f) for f in ['name','preferred_name','phone','alternate_phone','email','state','district','village','community','languages']})
+            self.initial.update({f:getattr(participation.participant,f) for f in ['name','preferred_name','phone','alternate_phone','email','state','district','village','community','tribal_status','tribe_name','languages']})
             for f in ['version','category','primary_stream','travel_eligible','accommodation_eligible','food_eligible','kit_eligible','finance_eligible','accessible_bed_required','accommodation_group','dietary_instructions']:self.initial[f]=getattr(participation,f)
             self.initial['secondary_streams']=participation.secondary_streams.all()
+    def clean(self):
+        data=super().clean()
+        if data.get('tribal_status')=='Not Tribal' and data.get('tribe_name'):
+            self.add_error('tribe_name','Leave tribe name blank when Not Tribal is selected.')
+        return data
 
 class ImportForm(forms.Form):
     file=forms.FileField(label='UTF-8 CSV or .xlsx file')

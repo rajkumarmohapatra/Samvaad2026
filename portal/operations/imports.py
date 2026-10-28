@@ -5,7 +5,7 @@ from .forms import NominationForm
 from .models import Participant,Receipt
 from .services import nominate
 
-HEADERS=['name','phone','state','district','community','primary_stream','category']
+HEADERS=['name','phone','state','district','community','tribal_status','tribe_name','primary_stream','category']
 
 def preview(user,edition,upload):
     content=upload.read()
@@ -30,6 +30,8 @@ def preview(user,edition,upload):
     for n,row in enumerate(raw,2):
         if not any(str(x).strip() for x in row.values()):continue
         data={str(k).strip():str(v or '').strip() for k,v in row.items() if k is not None}
+        status=data.get('tribal_status','')
+        data['tribal_status']={'tribal':'Tribal','not tribal':'Not Tribal','not_tribal':'Not Tribal','prefer not to say':'Prefer not to say','not specified':''}.get(status.casefold(),status)
         data['request_key']=str(uuid.uuid4());data['food_eligible']='on';data['kit_eligible']='on'
         f=NominationForm(data,user=user,edition=edition)
         errors=[]

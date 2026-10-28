@@ -58,6 +58,7 @@ class RolePermission(Record):
     def __str__(self):return f'{self.role}: {self.resource}.{self.action}'
 
 class Participant(Record):
+    TRIBAL_STATUS_CHOICES=[('', 'Not specified'), ('Tribal', 'Tribal'), ('Not Tribal', 'Not Tribal'), ('Prefer not to say', 'Prefer not to say')]
     name=models.CharField(max_length=150)
     preferred_name=models.CharField(max_length=100,blank=True)
     phone=models.CharField(max_length=20,validators=[RegexValidator(r'^\d{10,15}$','Use 10 to 15 digits.')],db_index=True)
@@ -67,9 +68,15 @@ class Participant(Record):
     district=models.CharField(max_length=100,blank=True)
     village=models.CharField(max_length=120,blank=True)
     community=models.CharField(max_length=180,blank=True,help_text='Optional, self-reported; never inferred.')
+    tribal_status=models.CharField('Tribal or Not Tribal',max_length=20,choices=TRIBAL_STATUS_CHOICES,blank=True,default='',help_text='Optional, self-reported. Do not infer this from community, name or location.')
+    tribe_name=models.CharField(max_length=180,blank=True,default='',help_text='Optional tribe name, exactly as supplied by the participant.')
     languages=models.CharField(max_length=180,blank=True)
     user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,null=True,blank=True,related_name='participant_profile')
     def __str__(self):return self.name
+    def clean(self):
+        super().clean()
+        if self.tribal_status=='Not Tribal' and self.tribe_name.strip():
+            raise ValidationError({'tribe_name':'Leave tribe name blank when Not Tribal is selected.'})
 
 class Participation(Record):
     participant=models.ForeignKey(Participant,on_delete=models.PROTECT)
