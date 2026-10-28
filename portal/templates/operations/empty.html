@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<article class="empty"><h2>{{ title }}</h2><p>{{ intro }}</p>{% if user.is_superuser %}<a class="button primary" href="{% url 'admin:index' %}">Open administration</a>{% endif %}</article>{% endblock %}

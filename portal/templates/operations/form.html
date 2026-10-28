@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<article><p class="muted">{{ intro }}</p><form method="post" class="data-form">{% csrf_token %}{{ form.as_p }}<div class="form-actions"><button class="primary">Save</button><a class="button" href="{% url 'dashboard' %}">Back to command center</a></div></form></article>{% endblock %}
